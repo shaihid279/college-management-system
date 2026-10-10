@@ -24,7 +24,7 @@
                 var f = inp.files && inp.files[0];
                 var img = document.querySelector(inp.getAttribute('data-preview'));
                 if (!f || !img) return;
-                if (f.size > 2 * 1024 * 1024) { alert('File 2 MB se badi hai. Chhoti photo chunein.'); inp.value = ''; return; }
+                if (f.size > 2 * 1024 * 1024) { alert('The file is larger than 2 MB. Select a smaller image.'); inp.value = ''; return; }
                 img.src = URL.createObjectURL(f);
             });
         });

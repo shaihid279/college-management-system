@@ -2,11 +2,11 @@ package com.college.cms.controller;
 
 import com.college.cms.model.*;
 import com.college.cms.repository.*;
+import com.college.cms.service.AudienceService;
 import com.college.cms.service.AuditService;
 import com.college.cms.service.BranchService;
 import com.college.cms.service.FileStorageService;
 import com.college.cms.service.PlacementService;
-import com.college.cms.service.AudienceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
@@ -31,9 +31,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminController {
     private final UserRepository users;
-    private final EventRepository eventRepo;
-    private final PasswordResetTokenRepository resetTokens;
-    private final ApprovedEmailRepository approvedEmails;
     private final StudentRepository students;
     private final NoticeRepository notices;
     private final PlacementRepository placements;
@@ -48,8 +45,11 @@ public class AdminController {
     private final FileStorageService storage;
     private final PlacementService placementService;
     private final BranchService branchService;
-    private final AudienceService audience;
     private final AuditService audit;
+    private final EventRepository eventRepo;
+    private final PasswordResetTokenRepository resetTokens;
+    private final ApprovedEmailRepository approvedEmails;
+    private final AudienceService audience;
 
     // ---------------- Dashboard ----------------
     @GetMapping("/dashboard")
@@ -91,14 +91,14 @@ public class AdminController {
         fullName = fullName.trim();
         idCardNo = idCardNo.trim();
         branch = branch.trim();
-        if (role == Role.ADMIN) return fail(ra, "Admin account yahan se nahi banta.");
-        if (!username.matches("^[A-Za-z0-9._-]{3,40}$")) return fail(ra, "Username 3-40 character ka ho (letters, numbers, . _ -).");
-        if (fullName.length() < 2) return fail(ra, "Poora naam likhein.");
-        if (password.length() < 8) return fail(ra, "Password kam se kam 8 character ka ho.");
-        if (users.existsByUsername(username)) return fail(ra, "Ye username pehle se hai.");
+        if (role == Role.ADMIN) return fail(ra, "Admin accounts cannot be created from here.");
+        if (!username.matches("^[A-Za-z0-9._-]{3,40}$")) return fail(ra, "Username must be 3-40 characters (letters, numbers, . _ -).");
+        if (fullName.length() < 2) return fail(ra, "Please enter the full name.");
+        if (password.length() < 8) return fail(ra, "Password must be at least 8 characters.");
+        if (users.existsByUsername(username)) return fail(ra, "This username already exists.");
         if (role == Role.STUDENT) {
-            if (idCardNo.isEmpty() || branch.isEmpty() || year == null) return fail(ra, "Student ke liye ID card no, branch aur year zaruri hai.");
-            if (students.existsByIdCardNo(idCardNo)) return fail(ra, "Ye ID card number pehle se hai.");
+            if (idCardNo.isEmpty() || branch.isEmpty() || year == null) return fail(ra, "ID card number, branch and year are required for a student.");
+            if (students.existsByIdCardNo(idCardNo)) return fail(ra, "This ID card number already exists.");
         }
         User u = new User();
         u.setUsername(username);
@@ -119,31 +119,31 @@ public class AdminController {
             students.save(s);
         }
         audit.log(auth.getName(), "USER_CREATED", role == Role.STUDENT ? idCardNo : null, username + " (" + role + ")");
-        ra.addFlashAttribute("success", "Account ban gaya: " + username);
+        ra.addFlashAttribute("success", "Account created: " + username);
         return "redirect:/admin/users";
     }
 
     @PostMapping("/users/{id}/toggle")
     public String toggle(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         User u = users.findById(id).orElse(null);
-        if (u == null) return fail(ra, "User nahi mila.");
-        if (u.getUsername().equals(auth.getName())) return fail(ra, "Aap khud ko disable nahi kar sakte.");
+        if (u == null) return fail(ra, "User not found.");
+        if (u.getUsername().equals(auth.getName())) return fail(ra, "You cannot disable your own account.");
         u.setEnabled(!u.isEnabled());
         users.save(u);
         audit.log(auth.getName(), u.isEnabled() ? "USER_ENABLED" : "USER_DISABLED", null, u.getUsername());
-        ra.addFlashAttribute("success", u.getUsername() + (u.isEnabled() ? " enable" : " disable") + " ho gaya.");
+        ra.addFlashAttribute("success", u.getUsername() + (u.isEnabled() ? " enabled." : " disabled."));
         return "redirect:/admin/users";
     }
 
     @PostMapping("/users/{id}/password")
     public String resetPassword(@PathVariable Long id, @RequestParam String newPassword, Authentication auth, RedirectAttributes ra) {
         User u = users.findById(id).orElse(null);
-        if (u == null) return fail(ra, "User nahi mila.");
-        if (newPassword.length() < 8) return fail(ra, "Password kam se kam 8 character ka ho.");
+        if (u == null) return fail(ra, "User not found.");
+        if (newPassword.length() < 8) return fail(ra, "Password must be at least 8 characters.");
         u.setPassword(encoder.encode(newPassword));
         users.save(u);
         audit.log(auth.getName(), "PASSWORD_RESET", null, u.getUsername());
-        ra.addFlashAttribute("success", u.getUsername() + " ka password badal diya.");
+        ra.addFlashAttribute("success", "Password updated for " + u.getUsername() + ".");
         return "redirect:/admin/users";
     }
 
@@ -155,12 +155,12 @@ public class AdminController {
                             @RequestParam(required = false) List<String> branches,
                             Authentication auth, RedirectAttributes ra) {
         if (title.isBlank() || title.length() > 190) {
-            ra.addFlashAttribute("error", "Notice ka title likhein.");
+            ra.addFlashAttribute("error", "Notice title is required.");
             return "redirect:/notices";
         }
         String target = audience.buildTarget(allDepartments, branches, branchService.all());
         if (target == null) {
-            ra.addFlashAttribute("error", "Kam se kam ek department chunein ya 'Sabhi departments' tick karein.");
+            ra.addFlashAttribute("error", "Select at least one department or tick 'All departments'.");
             return "redirect:/notices";
         }
         Notice n = new Notice();
@@ -170,13 +170,14 @@ public class AdminController {
         n.setTargetBranches(target);
         n.setPostedBy(auth.getName());
         notices.save(n);
-        ra.addFlashAttribute("success", "Notice post ho gaya.");
+        ra.addFlashAttribute("success", "Notice posted.");
         return "redirect:/notices";
     }
+
     @PostMapping("/notices/{id}/delete")
     public String deleteNotice(@PathVariable Long id, RedirectAttributes ra) {
         notices.deleteById(id);
-        ra.addFlashAttribute("success", "Notice delete ho gaya.");
+        ra.addFlashAttribute("success", "Notice deleted.");
         return "redirect:/notices";
     }
 
@@ -187,7 +188,7 @@ public class AdminController {
                                @RequestParam(defaultValue = "0") int studentsPlaced,
                                @RequestParam(defaultValue = "") String academicYear, RedirectAttributes ra) {
         if (company.isBlank()) {
-            ra.addFlashAttribute("error", "Company ka naam likhein.");
+            ra.addFlashAttribute("error", "Company name is required.");
             return "redirect:/placements";
         }
         Placement p = new Placement();
@@ -198,7 +199,7 @@ public class AdminController {
         p.setAcademicYear(academicYear.trim());
         p.setSource("MANUAL");
         placements.save(p);
-        ra.addFlashAttribute("success", "Placement record add ho gaya.");
+        ra.addFlashAttribute("success", "Placement record added.");
         return "redirect:/placements";
     }
 
@@ -213,11 +214,11 @@ public class AdminController {
     public String importPlacements(@RequestParam MultipartFile file, RedirectAttributes ra) {
         try {
             int n = placementService.importFile(file);
-            ra.addFlashAttribute("success", n + " placement records import ho gaye.");
+            ra.addFlashAttribute("success", n + " placement records imported.");
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "File padhne me error aaya. Format check karein.");
+            ra.addFlashAttribute("error", "Could not read the file. Please check the format.");
         }
         return "redirect:/placements";
     }
@@ -225,7 +226,7 @@ public class AdminController {
     @PostMapping("/placements/{id}/delete")
     public String deletePlacement(@PathVariable Long id, RedirectAttributes ra) {
         placements.deleteById(id);
-        ra.addFlashAttribute("success", "Record delete ho gaya.");
+        ra.addFlashAttribute("success", "Record deleted.");
         return "redirect:/placements";
     }
 
@@ -237,7 +238,7 @@ public class AdminController {
                             @RequestParam(defaultValue = "") String achievement,
                             @RequestParam(required = false) MultipartFile photo, RedirectAttributes ra) {
         if (studentName.isBlank() || branch.isBlank()) {
-            ra.addFlashAttribute("error", "Naam aur branch zaruri hai.");
+            ra.addFlashAttribute("error", "Name and branch are required.");
             return "redirect:/toppers";
         }
         Topper t = new Topper();
@@ -247,7 +248,7 @@ public class AdminController {
             ra.addFlashAttribute("error", e.getMessage());
             return "redirect:/toppers";
         } catch (IOException e) {
-            ra.addFlashAttribute("error", "Photo save nahi ho payi.");
+            ra.addFlashAttribute("error", "The photo could not be saved.");
             return "redirect:/toppers";
         }
         t.setStudentName(studentName.trim());
@@ -257,7 +258,7 @@ public class AdminController {
         t.setPercentage(percentage);
         t.setAchievement(achievement.trim().length() > 190 ? achievement.trim().substring(0, 190) : achievement.trim());
         toppers.save(t);
-        ra.addFlashAttribute("success", "Topper add ho gaya.");
+        ra.addFlashAttribute("success", "Topper added.");
         return "redirect:/toppers";
     }
 
@@ -267,7 +268,7 @@ public class AdminController {
             storage.delete(t.getPhoto());
             toppers.delete(t);
         });
-        ra.addFlashAttribute("success", "Topper delete ho gaya.");
+        ra.addFlashAttribute("success", "Topper deleted.");
         return "redirect:/toppers";
     }
 
@@ -277,7 +278,7 @@ public class AdminController {
                          @RequestParam(defaultValue = "0") BigDecimal otherFee,
                          @RequestParam(defaultValue = "") String notes, RedirectAttributes ra) {
         if (branch.isBlank() || tuitionFee.signum() < 0 || otherFee.signum() < 0) {
-            ra.addFlashAttribute("error", "Branch aur fees sahi bharein.");
+            ra.addFlashAttribute("error", "Please enter a valid branch and fees.");
             return "redirect:/fees";
         }
         FeeStructure f = new FeeStructure();
@@ -287,14 +288,14 @@ public class AdminController {
         f.setOtherFee(otherFee);
         f.setNotes(notes.trim().length() > 190 ? notes.trim().substring(0, 190) : notes.trim());
         fees.save(f);
-        ra.addFlashAttribute("success", "Fee structure add ho gaya.");
+        ra.addFlashAttribute("success", "Fee structure added.");
         return "redirect:/fees";
     }
 
     @PostMapping("/fees/{id}/delete")
     public String deleteFee(@PathVariable Long id, RedirectAttributes ra) {
         fees.deleteById(id);
-        ra.addFlashAttribute("success", "Fee structure delete ho gaya.");
+        ra.addFlashAttribute("success", "Fee structure deleted.");
         return "redirect:/fees";
     }
 
@@ -306,7 +307,7 @@ public class AdminController {
                           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
                           @RequestParam(defaultValue = "") String room, RedirectAttributes ra) {
         if (subject.isBlank() || branch.isBlank()) {
-            ra.addFlashAttribute("error", "Subject aur branch zaruri hai.");
+            ra.addFlashAttribute("error", "Subject and branch are required.");
             return "redirect:/exams";
         }
         ExamSchedule e = new ExamSchedule();
@@ -318,14 +319,14 @@ public class AdminController {
         e.setStartTime(startTime);
         e.setRoom(room.trim());
         exams.save(e);
-        ra.addFlashAttribute("success", "Exam add ho gaya.");
+        ra.addFlashAttribute("success", "Exam added.");
         return "redirect:/exams";
     }
 
     @PostMapping("/exams/{id}/delete")
     public String deleteExam(@PathVariable Long id, RedirectAttributes ra) {
         exams.deleteById(id);
-        ra.addFlashAttribute("success", "Exam delete ho gaya.");
+        ra.addFlashAttribute("success", "Exam deleted.");
         return "redirect:/exams";
     }
 
@@ -337,7 +338,7 @@ public class AdminController {
                                @RequestParam String subject, @RequestParam(defaultValue = "") String teacherName,
                                @RequestParam(defaultValue = "") String room, RedirectAttributes ra) {
         if (branch.isBlank() || subject.isBlank() || !endTime.isAfter(startTime)) {
-            ra.addFlashAttribute("error", "Details sahi bharein (end time start ke baad ho).");
+            ra.addFlashAttribute("error", "Please enter valid details (the end time must be after the start time).");
             return "redirect:/timetable";
         }
         TimetableEntry t = new TimetableEntry();
@@ -350,14 +351,14 @@ public class AdminController {
         t.setTeacherName(teacherName.trim());
         t.setRoom(room.trim());
         timetable.save(t);
-        ra.addFlashAttribute("success", "Timetable entry add ho gayi.");
+        ra.addFlashAttribute("success", "Timetable entry added.");
         return "redirect:/timetable";
     }
 
     @PostMapping("/timetable/{id}/delete")
     public String deleteTimetable(@PathVariable Long id, RedirectAttributes ra) {
         timetable.deleteById(id);
-        ra.addFlashAttribute("success", "Entry delete ho gayi.");
+        ra.addFlashAttribute("success", "Entry deleted.");
         return "redirect:/timetable";
     }
 
@@ -404,9 +405,10 @@ public class AdminController {
             f.setStatus(resolved ? "RESOLVED" : "OPEN");
             feedbackRepo.save(f);
         });
-        ra.addFlashAttribute("success", "Feedback update ho gaya.");
+        ra.addFlashAttribute("success", "Feedback updated.");
         return "redirect:/admin/feedback";
     }
+
     // ---------------- Approvals ----------------
     @GetMapping("/approvals")
     public String approvals(Model m) {
@@ -420,7 +422,7 @@ public class AdminController {
     public String approve(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         User u = users.findById(id).orElse(null);
         if (u == null || u.isApproved()) {
-            ra.addFlashAttribute("error", "Ye request ab available nahi hai.");
+            ra.addFlashAttribute("error", "This request is no longer available.");
             return "redirect:/admin/approvals";
         }
         u.setApproval("APPROVED");
@@ -431,10 +433,10 @@ public class AdminController {
             a.setEmail(u.getEmail().toLowerCase());
             a.setRole(u.getRole().name());
             a.setApprovedBy(auth.getName());
-            approvedEmails.save(a);   // ek baar approve ho gaya to is email ko dobara approval nahi lagega
+            approvedEmails.save(a);   // once approved, this email never needs approval again
         }
         audit.log(auth.getName(), "ACCOUNT_APPROVED", null, u.getUsername() + " (" + u.getRole() + ")");
-        ra.addFlashAttribute("success", u.getFullName() + " approve ho gaye. Ab wo login kar sakte hain.");
+        ra.addFlashAttribute("success", u.getFullName() + " has been approved and can now log in.");
         return "redirect:/admin/approvals";
     }
 
@@ -443,14 +445,14 @@ public class AdminController {
     public String reject(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         User u = users.findById(id).orElse(null);
         if (u == null || u.isApproved()) {
-            ra.addFlashAttribute("error", "Ye request ab available nahi hai.");
+            ra.addFlashAttribute("error", "This request is no longer available.");
             return "redirect:/admin/approvals";
         }
         storage.delete(u.getPhoto());
         resetTokens.deleteByUser(u);
         users.delete(u);
         audit.log(auth.getName(), "ACCOUNT_REJECTED", null, u.getUsername() + " (" + u.getRole() + ")");
-        ra.addFlashAttribute("success", "Request reject ho gayi.");
+        ra.addFlashAttribute("success", "Request rejected.");
         return "redirect:/admin/approvals";
     }
 
@@ -458,18 +460,19 @@ public class AdminController {
     @Transactional
     public String deleteUser(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         User u = users.findById(id).orElse(null);
-        if (u == null) return fail(ra, "User nahi mila.");
+        if (u == null) return fail(ra, "User not found.");
         if (u.getRole() != Role.TEACHER && u.getRole() != Role.ORGANIZER)
-            return fail(ra, "Sirf Teacher / Organizer delete ho sakta hai. Student ko Disable karein.");
+            return fail(ra, "Only a Teacher or an Organizer can be deleted. Disable a student instead.");
         if (u.getRole() == Role.ORGANIZER && !eventRepo.findByCreatedByOrderByEventDateTimeDesc(u).isEmpty())
-            return fail(ra, "Is organizer ke events hain. Pehle Disable karein.");
+            return fail(ra, "This organizer has events. Disable the account first.");
         storage.delete(u.getPhoto());
         resetTokens.deleteByUser(u);
         users.delete(u);
         audit.log(auth.getName(), "USER_DELETED", null, u.getUsername() + " (" + u.getRole() + ")");
-        ra.addFlashAttribute("success", "Account delete ho gaya. Wahi email dobara register kare to approval nahi lagega.");
+        ra.addFlashAttribute("success", "Account deleted. If the same email registers again, no approval will be needed.");
         return "redirect:/admin/users";
     }
+
     private String fail(RedirectAttributes ra, String msg) {
         ra.addFlashAttribute("error", msg);
         return "redirect:/admin/users";

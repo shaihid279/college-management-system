@@ -40,8 +40,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Placement data: college site (enggnagar) ke placement pages se Google Sheet / PDF ke links milte hain.
- * Sheet public ho to CSV download karke companies bhar deta hai. Site/sheet band ho to "coming soon" dikhta hai.
+ * Placement data: the placement pages of the college site (enggnagar) contain links to a Google Sheet and PDFs.
+ * If the sheet is public, it is downloaded as CSV and the companies are loaded.
+ * If the site or the sheet is unavailable, the page shows "coming soon".
  */
 @Service
 @Slf4j
@@ -57,7 +58,7 @@ public class PlacementService {
     private final HttpClient http = HttpClient.newBuilder()
             .followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(15)).build();
 
-    private volatile String lastStatus = "Abhi tak sync nahi hua";
+    private volatile String lastStatus = "Not synced yet";
     private volatile boolean sourceOnline = false;
     private volatile String lastAttempt = "-";
     private volatile List<String[]> links = List.of();
@@ -86,7 +87,7 @@ public class PlacementService {
         lastAttempt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a"));
         if (sourceUrl == null || sourceUrl.isBlank()) {
             sourceOnline = false;
-            return lastStatus = "Source URL set nahi hai.";
+            return lastStatus = "The source URL is not set.";
         }
         String base = sourceUrl.trim().replaceAll("/+$", "");
         List<String[]> found = new ArrayList<>();
@@ -106,7 +107,7 @@ public class PlacementService {
                 String b = doc.body() == null ? "" : doc.body().text().toLowerCase();
                 if (t.contains("suspended") || b.contains("account has been suspended")) {
                     sourceOnline = false;
-                    return lastStatus = "Source website abhi suspended hai - data coming soon.";
+                    return lastStatus = "The source website is currently suspended - data coming soon.";
                 }
                 for (Element a : doc.select("a[href]")) {
                     String href = a.absUrl("href");
@@ -123,43 +124,43 @@ public class PlacementService {
                 }
             }
         } catch (Exception e) {
-            log.warn("Placement sync fail: {}", e.getMessage());
+            log.warn("Placement sync failed: {}", e.getMessage());
         }
         if (reached == 0) {
             sourceOnline = false;
-            return lastStatus = "College website abhi available nahi hai - data coming soon.";
+            return lastStatus = "The college website is currently unavailable - data coming soon.";
         }
         sourceOnline = true;
         links = List.copyOf(found);
         if (sheetUrl == null) {
-            return lastStatus = "College site chal rahi hai par companies ki sheet ka link nahi mila.";
+            return lastStatus = "The college site is running, but the companies sheet link was not found.";
         }
         try {
             String csvUrl = csvUrl(sheetUrl);
-            if (csvUrl == null) return lastStatus = "Sheet ka link samajh nahi aaya.";
+            if (csvUrl == null) return lastStatus = "Could not understand the sheet link.";
             HttpRequest req = HttpRequest.newBuilder(URI.create(csvUrl)).timeout(Duration.ofSeconds(30))
                     .header("User-Agent", UA).GET().build();
             HttpResponse<byte[]> resp = http.send(req, HttpResponse.BodyHandlers.ofByteArray());
             String body = new String(resp.body(), StandardCharsets.UTF_8);
             if (resp.statusCode() != 200 || body.trim().toLowerCase().startsWith("<")) {
-                return lastStatus = "Google Sheet public nahi hai (Share > Anyone with the link). Abhi sheet ko CSV download karke Admin tools se upload kar sakte hain.";
+                return lastStatus = "The Google Sheet is not public (Share > Anyone with the link). For now, download the sheet as CSV and upload it from Admin tools.";
             }
             List<Placement> rows = toPlacements(parseCsv(body), "WEB");
             if (rows.isEmpty()) {
-                return lastStatus = "Sheet mili par usme company ka column nahi mila. Admin tools se CSV upload karein.";
+                return lastStatus = "The sheet was found but it has no company column. Please upload a CSV from Admin tools.";
             }
             tx.executeWithoutResult(s -> {
                 repo.deleteAll(repo.findBySource("WEB"));
                 repo.saveAll(rows);
             });
-            return lastStatus = rows.size() + " company records college ki sheet se aaye.";
+            return lastStatus = rows.size() + " company records loaded from the college sheet.";
         } catch (Exception e) {
-            log.warn("Sheet download fail: {}", e.getMessage());
-            return lastStatus = "Sheet abhi load nahi ho payi. Thodi der baad dobara try hoga.";
+            log.warn("Sheet download failed: {}", e.getMessage());
+            return lastStatus = "The sheet could not be loaded right now. It will be retried shortly.";
         }
     }
 
-    /** CSV / Excel upload. Pehli row header (company, role, package, students placed, year jaise naam). */
+    /** CSV / Excel upload. The first row must be a header (names like company, role, package, students placed, year). */
     @Transactional
     public int importFile(MultipartFile file) throws IOException {
         String name = file.getOriginalFilename() == null ? "" : file.getOriginalFilename().toLowerCase();
@@ -182,10 +183,10 @@ public class PlacementService {
                 }
             }
         } else {
-            throw new IllegalArgumentException("Sirf .csv ya .xlsx file upload karein.");
+            throw new IllegalArgumentException("Please upload a .csv or .xlsx file only.");
         }
         List<Placement> list = toPlacements(rows, "FILE");
-        if (list.isEmpty()) throw new IllegalArgumentException("File me company ka column nahi mila (header me 'Company' likhein).");
+        if (list.isEmpty()) throw new IllegalArgumentException("No company column found in the file (write 'Company' in the header).");
         repo.saveAll(list);
         return list.size();
     }

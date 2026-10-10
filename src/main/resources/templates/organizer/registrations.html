@@ -18,7 +18,7 @@
                 <td><span th:text="${r.student.branch}"></span> <span class="badge text-bg-secondary" th:text="'Y' + ${r.student.year}"></span></td>
                 <td class="small" th:text="${#temporals.format(r.registeredAt, 'dd MMM yyyy, hh:mm a')}"></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(regs)}"><td colspan="5" class="text-center text-muted py-4">Abhi tak kisi ne register nahi kiya.</td></tr>
+            <tr th:if="${#lists.isEmpty(regs)}"><td colspan="5" class="text-center text-muted py-4">No one has registered yet.</td></tr>
             </tbody>
         </table>
     </div></div>

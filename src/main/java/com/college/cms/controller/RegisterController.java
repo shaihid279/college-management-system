@@ -78,20 +78,20 @@ public class RegisterController {
         keep.put("year", year == null ? "" : year.toString());
 
         String err = null;
-        if (fullName.length() < 2 || fullName.length() > 100) err = "Naam 2 se 100 character ka hona chahiye.";
-        else if (!username.matches("^[A-Za-z0-9._-]{3,40}$")) err = "Username 3-40 character ka ho (letters, numbers, . _ -).";
-        else if (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$") || email.length() > 120) err = "Sahi email likhein.";
-        else if (!phone.matches("^[0-9+\\- ]{0,15}$")) err = "Phone number sahi nahi hai.";
-        else if (password.length() < 8) err = "Password kam se kam 8 character ka ho.";
-        else if (!password.equals(confirm)) err = "Dono password match nahi karte.";
-        else if (users.existsByUsername(username)) err = "Ye username pehle se liya ja chuka hai.";
-        else if (users.findFirstByEmailIgnoreCase(email).isPresent()) err = "Is email se account pehle se hai.";
-        else if (r == Role.TEACHER && department.isEmpty()) err = "Apna department chunein.";
+        if (fullName.length() < 2 || fullName.length() > 100) err = "The name should be between 2 and 100 characters.";
+        else if (!username.matches("^[A-Za-z0-9._-]{3,40}$")) err = "Username 3-40 character only (letters, numbers, . _ -).";
+        else if (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$") || email.length() > 120) err = "Write the correct email.";
+        else if (!phone.matches("^[0-9+\\- ]{0,15}$")) err = "Phone number is invalid.";
+        else if (password.length() < 8) err = "Password must be at least 8 characters long.";
+        else if (!password.equals(confirm)) err = "Both passwords do not match.";
+        else if (users.existsByUsername(username)) err = "This username is already taken.";
+        else if (users.findFirstByEmailIgnoreCase(email).isPresent()) err = "There is already an account with this email address.";
+        else if (r == Role.TEACHER && department.isEmpty()) err = "Choose your department.";
         else if (r == Role.STUDENT) {
-            if (!idCardNo.matches("^[A-Za-z0-9/_-]{3,40}$")) err = "ID card number sahi likhein.";
-            else if (branch.isEmpty()) err = "Branch chunein.";
-            else if (year == null || year < 1 || year > 4) err = "Year 1 se 4 ke beech chunein.";
-            else if (students.existsByIdCardNo(idCardNo)) err = "Ye ID card number pehle se registered hai.";
+            if (!idCardNo.matches("^[A-Za-z0-9/_-]{3,40}$")) err = "Please enter the correct ID card number.";
+            else if (branch.isEmpty()) err = "Choose branch.";
+            else if (year == null || year < 1 || year > 4) err = "Choose between Year 1 to Year 4.";
+            else if (students.existsByIdCardNo(idCardNo)) err = "This ID card number is already registered.";
         }
         if (err != null) return fail(ra, role, err, keep);
 
@@ -101,7 +101,7 @@ public class RegisterController {
         } catch (IllegalArgumentException e) {
             return fail(ra, role, e.getMessage(), keep);
         } catch (IOException e) {
-            return fail(ra, role, "Photo save nahi ho payi, dobara try karein.", keep);
+            return fail(ra, role, "The photo could not be saved, please try again.", keep);
         }
 
         User u = new User();
@@ -124,11 +124,11 @@ public class RegisterController {
             s.setBranch(branch);
             s.setYear(year);
             students.save(s);
-            ra.addFlashAttribute("success", "Registration ho gaya! Ab login karein.");
+            ra.addFlashAttribute("success", "Registration done! Login now.");
         } else if (preApproved) {
             ra.addFlashAttribute("success", "Registration ho gaya. Aapka email pehle se approved hai, ab login kar sakte hain.");
         } else {
-            ra.addFlashAttribute("success", "Registration ho gaya. Admin approval ke baad aap login kar payenge.");
+            ra.addFlashAttribute("success", "Registration is complete. You can log in after admin approval.");
         }
         return "redirect:/login/" + role;
     }

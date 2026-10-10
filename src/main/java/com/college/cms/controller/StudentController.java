@@ -2,8 +2,8 @@ package com.college.cms.controller;
 
 import com.college.cms.model.*;
 import com.college.cms.repository.*;
-import com.college.cms.service.PdfService;
 import com.college.cms.service.AudienceService;
+import com.college.cms.service.PdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/** Student sirf apna data dekhta hai: ID hamesha login session se aati hai, URL se nahi. */
+/** A student only sees their own data: the ID always comes from the login session, never from the URL. */
 @Controller
 @RequestMapping("/student")
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class StudentController {
 
     private Student me(Authentication auth) {
         return students.findByUserUsername(auth.getName())
-                .orElseThrow(() -> new IllegalStateException("Student profile nahi mili"));
+                .orElseThrow(() -> new IllegalStateException("Student profile not found"));
     }
 
     @GetMapping("/dashboard")
@@ -91,7 +91,7 @@ public class StudentController {
         subject = subject.trim();
         message = message.trim();
         if (subject.length() < 3 || subject.length() > 190 || message.length() < 10 || message.length() > 1900) {
-            ra.addFlashAttribute("error", "Subject (3+ character) aur message (10+ character) likhein.");
+            ra.addFlashAttribute("error", "Please enter a subject (3+ characters) and a message (10+ characters).");
             return "redirect:/student/feedback";
         }
         Feedback f = new Feedback();
@@ -100,7 +100,7 @@ public class StudentController {
         f.setSubject(subject);
         f.setMessage(message);
         feedbacks.save(f);
-        ra.addFlashAttribute("success", "Aapka message admin tak pahunch gaya.");
+        ra.addFlashAttribute("success", "Your message has been sent to the admin.");
         return "redirect:/student/feedback";
     }
 
@@ -109,26 +109,27 @@ public class StudentController {
         Student s = me(auth);
         Event e = events.findById(id).orElse(null);
         if (e == null) {
-            ra.addFlashAttribute("error", "Event nahi mila.");
+            ra.addFlashAttribute("error", "Event not found.");
         } else if (e.getEventDateTime().isBefore(LocalDateTime.now())) {
-            ra.addFlashAttribute("error", "Ye event ho chuka hai.");
+            ra.addFlashAttribute("error", "This event has already taken place.");
         } else if (!audience.visible(new AudienceService.Viewer(false, s.getBranch()), e.getTargetBranches())) {
-            ra.addFlashAttribute("error", "Ye event aapke department ke liye nahi hai.");
+            ra.addFlashAttribute("error", "This event is not open to your department.");
         } else if (!regs.existsByEventAndStudent(e, s)) {
             EventRegistration r = new EventRegistration();
             r.setEvent(e);
             r.setStudent(s);
             regs.save(r);
-            ra.addFlashAttribute("success", "Event me register ho gaye: " + e.getTitle());
+            ra.addFlashAttribute("success", "You are registered for: " + e.getTitle());
         }
         return "redirect:/events";
     }
+
     @PostMapping("/events/{id}/unregister")
     @Transactional
     public String unregister(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         Student s = me(auth);
         events.findById(id).flatMap(e -> regs.findByEventAndStudent(e, s)).ifPresent(regs::delete);
-        ra.addFlashAttribute("success", "Registration cancel ho gaya.");
+        ra.addFlashAttribute("success", "Registration cancelled.");
         return "redirect:/events";
     }
 }

@@ -69,7 +69,7 @@ public class TeacherController {
     public String detail(@PathVariable Long id, Model m, RedirectAttributes ra) {
         Student s = studentRepo.findById(id).orElse(null);
         if (s == null) {
-            ra.addFlashAttribute("error", "Student nahi mila.");
+            ra.addFlashAttribute("error", "Student not found.");
             return "redirect:/teacher/students";
         }
         m.addAttribute("s", s);
@@ -86,7 +86,7 @@ public class TeacherController {
         Student s = studentRepo.findById(id).orElse(null);
         if (s == null) return notFound(ra);
         if (attended < 0 || total < 0 || attended > total) {
-            ra.addFlashAttribute("error", "Attended classes total se zyada nahi ho sakti.");
+            ra.addFlashAttribute("error", "Attended classes cannot be more than total classes.");
             return back(id);
         }
         String old = s.getAttendedClasses() + "/" + s.getTotalClasses();
@@ -94,7 +94,7 @@ public class TeacherController {
         s.setTotalClasses(total);
         studentRepo.save(s);
         audit.log(auth.getName(), "ATTENDANCE_UPDATE", s.getIdCardNo(), old + " -> " + attended + "/" + total);
-        ra.addFlashAttribute("success", "Attendance update ho gayi.");
+        ra.addFlashAttribute("success", "Attendance updated.");
         return back(id);
     }
 
@@ -106,7 +106,7 @@ public class TeacherController {
         Student s = studentRepo.findById(id).orElse(null);
         if (s == null) return notFound(ra);
         if (subject.isBlank() || examName.isBlank() || obtained < 0 || max <= 0 || obtained > max) {
-            ra.addFlashAttribute("error", "Marks details sahi bharein (obtained, max se zyada nahi).");
+            ra.addFlashAttribute("error", "Please enter valid marks details (obtained cannot exceed the maximum).");
             return back(id);
         }
         Mark mk = new Mark();
@@ -117,7 +117,7 @@ public class TeacherController {
         mk.setMaxMarks(max);
         markRepo.save(mk);
         audit.log(auth.getName(), "MARKS_ADDED", s.getIdCardNo(), subject.trim() + " (" + examName.trim() + "): " + obtained + "/" + max);
-        ra.addFlashAttribute("success", "Marks add ho gaye.");
+        ra.addFlashAttribute("success", "Marks added.");
         return back(id);
     }
 
@@ -130,7 +130,7 @@ public class TeacherController {
             markRepo.delete(mk);
             audit.log(auth.getName(), "MARKS_DELETED", s.getIdCardNo(), mk.getSubject() + " (" + mk.getExamName() + ")");
         });
-        ra.addFlashAttribute("success", "Marks delete ho gaye.");
+        ra.addFlashAttribute("success", "Marks deleted.");
         return back(id);
     }
 
@@ -141,7 +141,7 @@ public class TeacherController {
         Student s = studentRepo.findById(id).orElse(null);
         if (s == null) return notFound(ra);
         if (amount.signum() <= 0 || amount.compareTo(s.getPendingFees()) > 0 || !MODES.contains(mode)) {
-            ra.addFlashAttribute("error", "Amount 0 se zyada aur pending fees se kam/barabar hona chahiye.");
+            ra.addFlashAttribute("error", "The amount must be above 0 and not more than the pending fees.");
             return back(id);
         }
         Payment p = new Payment();
@@ -155,7 +155,7 @@ public class TeacherController {
         studentRepo.save(s);
         paymentRepo.save(p);
         audit.log(auth.getName(), "FEES_PAYMENT", s.getIdCardNo(), "Rs. " + amount + " via " + mode + " (" + p.getReceiptNo() + ")");
-        ra.addFlashAttribute("success", "Payment record ho gaya. Receipt: " + p.getReceiptNo());
+        ra.addFlashAttribute("success", "Payment recorded. Receipt: " + p.getReceiptNo());
         return back(id);
     }
 
@@ -165,14 +165,14 @@ public class TeacherController {
         Student s = studentRepo.findById(id).orElse(null);
         if (s == null) return notFound(ra);
         if (totalFees.signum() < 0) {
-            ra.addFlashAttribute("error", "Total fees negative nahi ho sakti.");
+            ra.addFlashAttribute("error", "Total fees cannot be negative.");
             return back(id);
         }
         String old = s.getTotalFees().toPlainString();
         s.setTotalFees(totalFees);
         studentRepo.save(s);
         audit.log(auth.getName(), "TOTAL_FEES_UPDATE", s.getIdCardNo(), old + " -> " + totalFees.toPlainString());
-        ra.addFlashAttribute("success", "Total fees update ho gayi.");
+        ra.addFlashAttribute("success", "Total fees updated.");
         return back(id);
     }
 
@@ -185,7 +185,7 @@ public class TeacherController {
     private String back(Long id) { return "redirect:/teacher/students/" + id; }
 
     private String notFound(RedirectAttributes ra) {
-        ra.addFlashAttribute("error", "Student nahi mila.");
+        ra.addFlashAttribute("error", "Student not found.");
         return "redirect:/teacher/students";
     }
 

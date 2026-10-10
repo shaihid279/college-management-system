@@ -16,14 +16,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GlobalAdvice {
     private final UserRepository users;
 
-    /** Har page par "me" (logged-in user) available hoga. */
+    /** "me" (the logged-in user) is available on every page. */
     @ModelAttribute("me")
     public User me(Authentication auth) {
         if (auth == null || auth instanceof AnonymousAuthenticationToken || !auth.isAuthenticated()) return null;
         return users.findByUsername(auth.getName()).orElse(null);
     }
 
-    /** Admin ke navbar me pending approvals ka badge. */
+    /** Pending approvals badge shown in the admin navbar. */
     @ModelAttribute("pendingApprovals")
     public long pendingApprovals(Authentication auth) {
         if (auth == null || auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) return 0;
@@ -32,7 +32,7 @@ public class GlobalAdvice {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public String tooLarge(RedirectAttributes ra) {
-        ra.addFlashAttribute("error", "File bahut badi hai (max 2 MB).");
+        ra.addFlashAttribute("error", "The file is too large (max 2 MB).");
         return "redirect:/dashboard";
     }
 }

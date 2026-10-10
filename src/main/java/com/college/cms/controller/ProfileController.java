@@ -46,9 +46,9 @@ public class ProfileController {
         fullName = fullName.trim();
         email = email.trim();
         phone = phone.trim();
-        if (fullName.length() < 2 || fullName.length() > 100) return fail(ra, "Naam 2 se 100 character ka hona chahiye.");
-        if (!email.isEmpty() && !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) return fail(ra, "Email sahi nahi hai.");
-        if (!phone.matches("^[0-9+\\- ]{0,15}$")) return fail(ra, "Phone number sahi nahi hai.");
+        if (fullName.length() < 2 || fullName.length() > 100) return fail(ra, "The name must be 2 to 100 characters long.\n.");
+        if (!email.isEmpty() && !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) return fail(ra, "Email is invalid.");
+        if (!phone.matches("^[0-9+\\- ]{0,15}$")) return fail(ra, "Phone number is invalid.");
         try {
             String saved = storage.saveImage(photo, "profiles");
             if (saved != null) {
@@ -61,7 +61,7 @@ public class ProfileController {
         } catch (IllegalArgumentException e) {
             return fail(ra, e.getMessage());
         } catch (IOException e) {
-            return fail(ra, "Photo save nahi ho payi, dobara try karein.");
+            return fail(ra, "The photo could not be saved, please try again.\n.");
         }
         u.setFullName(fullName);
         u.setEmail(email.isEmpty() ? null : email);
@@ -69,7 +69,7 @@ public class ProfileController {
         u.setAddress(address.trim().length() > 290 ? address.trim().substring(0, 290) : address.trim());
         if (u.isTeacher() && !department.isBlank()) u.setDepartment(department.trim());
         users.save(u);
-        ra.addFlashAttribute("success", "Profile update ho gayi.");
+        ra.addFlashAttribute("success", "Profile updated.");
         return "redirect:/profile";
     }
 
@@ -81,16 +81,16 @@ public class ProfileController {
                                  @RequestParam String confirm, RedirectAttributes ra) {
         User u = users.findByUsername(auth.getName()).orElseThrow();
         if (!encoder.matches(current, u.getPassword())) {
-            ra.addFlashAttribute("error", "Purana password galat hai.");
+            ra.addFlashAttribute("error", "Old password is incorrect.");
             return "redirect:/change-password";
         }
         if (password.length() < 8 || !password.equals(confirm)) {
-            ra.addFlashAttribute("error", "Naya password kam se kam 8 character ka ho aur dono match karein.");
+            ra.addFlashAttribute("error", "The new password must be at least 8 characters long and must match.");
             return "redirect:/change-password";
         }
         u.setPassword(encoder.encode(password));
         users.save(u);
-        ra.addFlashAttribute("success", "Password badal gaya.");
+        ra.addFlashAttribute("success", "password changed.");
         return "redirect:/profile";
     }
 

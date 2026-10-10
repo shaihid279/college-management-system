@@ -51,7 +51,7 @@ public class DataInitializer implements CommandLineRunner {
             User u = users.save(newUser("student1", "Student@123", Role.STUDENT, "Aarav Patil", "student1@CampusCore.local"));
             Student s = new Student();
             s.setUser(u);
-            s.setIdCardNo("CS2024001");
+            s.setIdCardNo("PDVBE25001");
             s.setBranch("Computer Engineering");
             s.setYear(2);
             s.setTotalFees(BigDecimal.valueOf(85000));
@@ -75,8 +75,8 @@ public class DataInitializer implements CommandLineRunner {
         }
         if (notices.count() == 0) {
             Notice n = new Notice();
-            n.setTitle("CampusCore me aapka swagat hai");
-            n.setContent("Ye ek demo notice hai. Admin panel se naye notice daal sakte hain.");
+            n.setTitle("Welcome to CampusCore");
+            n.setContent("This is a demo notice. New notices can be added from the admin panel");
             n.setImportant(true);
             n.setPostedBy("system");
             notices.save(n);

@@ -7,22 +7,22 @@
             <div class="card-body p-4 p-md-5">
                 <div th:if="${!valid}" class="text-center">
                     <i class="bi bi-x-octagon text-danger display-4"></i>
-                    <h1 class="h5 mt-2">Link galat ya expire ho gaya</h1>
-                    <a class="btn btn-primary mt-2" th:href="@{/forgot-password}">Naya link mangein</a>
+                    <h1 class="h5 mt-2">The link is incorrect or expired</h1>
+                    <a class="btn btn-primary mt-2" th:href="@{/forgot-password}">new link </a>
                 </div>
                 <div th:if="${valid}">
-                    <h1 class="h4 mb-3">Naya password set karein</h1>
+                    <h1 class="h4 mb-3">Set new password </h1>
                     <form th:action="@{/reset-password}" method="post">
                         <input type="hidden" name="token" th:value="${token}">
                         <div class="mb-3">
-                            <label class="form-label" for="pw1">Naya password (min 8 character)</label>
+                            <label class="form-label" for="pw1">New password (min 8 character)</label>
                             <input class="form-control" type="password" id="pw1" name="password" minlength="8" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="pw2">Password dobara likhein</label>
+                            <label class="form-label" for="pw2">Re-enter your password </label>
                             <input class="form-control" type="password" id="pw2" name="confirm" minlength="8" required>
                         </div>
-                        <button class="btn btn-primary w-100" type="submit">Password badlein</button>
+                        <button class="btn btn-primary w-100" type="submit">Change Password </button>
                     </form>
                 </div>
             </div>

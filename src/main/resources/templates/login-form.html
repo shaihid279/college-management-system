@@ -8,21 +8,21 @@
                 <div class="text-center mb-4">
                     <div class="feature-icon bg-grad-1 mx-auto mb-3"><i class="bi" th:classappend="${icon}"></i></div>
                     <h1 class="h4 mb-1"><span th:text="${label}">Student</span> Login</h1>
-                    <p class="text-muted small mb-0" th:if="${portal == 'admin'}">Admin ki ID/password fix hai. Registration nahi hota.</p>
+                    <p class="text-muted small mb-0" th:if="${portal == 'admin'}">Admins ID/password is fixed. No Registrations .</p>
                 </div>
 
                 <div class="alert alert-danger py-2" th:if="${param.error != null}">
-                    <span th:if="${param.error[0] == 'pending'}">Aapka account abhi admin approval ke intezaar me hai. Approve hone ke baad login kar payenge.</span>
-                    <span th:if="${param.error[0] == 'disabled'}">Aapka account disable hai. Admin se sampark karein.</span>
-                    <span th:if="${param.error[0] == 'role'}">Ye account <strong th:text="${label}"></strong> ka nahi hai. Apne role ka sahi login chunein.</span>
-                    <span th:if="${param.error[0] != 'pending' and param.error[0] != 'disabled' and param.error[0] != 'role'}">Username ya password galat hai.</span>
+                    <span th:if="${param.error[0] == 'pending'}">Your account is currently awaiting admin approval. You'll be able to log in once it's approved..</span>
+                    <span th:if="${param.error[0] == 'disabled'}">Your account is disabled. Please contact the administrator.</span>
+                    <span th:if="${param.error[0] == 'role'}">this account <strong th:text="${label}"></strong> is not Yours. Choose the correct login for your role.</span>
+                    <span th:if="${param.error[0] != 'pending' and param.error[0] != 'disabled' and param.error[0] != 'role'}">Username or password is incorrect .</span>
                 </div>
 
                 <form th:action="@{/login}" method="post">
                     <input type="hidden" name="portal" th:value="${portal}">
                     <div class="mb-3">
 
-                        <label class="form-label" for="username">Username ya Email</label>
+                        <label class="form-label" for="username">Username or Email</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person"></i></span>
                             <input class="form-control form-control-lg" id="username" name="username" autocomplete="username" required autofocus>
@@ -36,14 +36,15 @@
                             <button class="btn btn-outline-secondary" type="button" data-toggle-password="#pw"><i class="bi bi-eye"></i></button>
                         </div>
                     </div>
-                    <div class="text-end mb-3"><a class="small" th:href="@{/forgot-password}">Password bhool gaye?</a></div>
+                    <div class="text-end mb-3"><a class="small" th:href="@{/forgot-password}">forgot password
+                        ?</a></div>
                     <button class="btn btn-primary btn-lg w-100" type="submit">Login</button>
                 </form>
 
                 <div class="text-center mt-3 small" th:if="${portal != 'admin'}">
-                    Naye ho? <a th:href="@{/register/{p}(p=${portal})}">Register karein</a>
+                    New here? <a th:href="@{/register/{p}(p=${portal})}">Register now</a>
                 </div>
-                <div class="text-center mt-2 small"><a th:href="@{/login}">&larr; Dusra role chunein</a></div>
+                <div class="text-center mt-2 small"><a th:href="@{/login}">&larr; choose another role</a></div>
             </div>
         </div>
     </div>

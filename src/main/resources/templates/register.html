@@ -3,7 +3,7 @@
 <body>
 <main class="container" style="max-width: 760px">
     <div class="text-center mb-3">
-        <h1 class="h3">Naya account banayein</h1>
+        <h1 class="h3">Create new account </h1>
         <ul class="nav nav-pills justify-content-center gap-1 mt-3 flex-wrap">
             <li class="nav-item"><a class="nav-link" th:classappend="${role == 'student'} ? 'active'" th:href="@{/register/student}">Student</a></li>
             <li class="nav-item"><a class="nav-link" th:classappend="${role == 'teacher'} ? 'active'" th:href="@{/register/teacher}">Teacher</a></li>
@@ -13,8 +13,8 @@
 
     <div class="alert alert-warning" th:if="${needsApproval}">
         <i class="bi bi-hourglass-split me-1"></i>
-        Registration ke baad <strong>Admin approval</strong> zaruri hai. Approve hone ke baad hi login hoga.
-        Ek baar approve hone ke baad wahi email dobara register kare to approval nahi lagega.
+        After Registration  <strong>Admin approval</strong> is compulsory. Login will only be possible after approval.
+        Once approved, registering the same email again will not require approval.
     </div>
 
     <div class="card"><div class="card-body p-4">
@@ -26,7 +26,7 @@
                                 accept="image/png,image/jpeg,image/webp" data-preview="#regPreview"></div>
                     <div class="form-text">Profile photo (optional, JPG/PNG/WEBP, max 2 MB)</div>
                 </div>
-                <div class="col-md-6"><label class="form-label">Poora naam</label>
+                <div class="col-md-6"><label class="form-label">Full name</label>
                     <input class="form-control" name="fullName" maxlength="100" required th:value="${regForm?.get('fullName')}"></div>
                 <div class="col-md-6"><label class="form-label">Username</label>
                     <input class="form-control" name="username" minlength="3" maxlength="40" required autocomplete="username" th:value="${regForm?.get('username')}"></div>
@@ -37,7 +37,7 @@
                 <th:block th:if="${role == 'teacher'}">
                     <div class="col-12"><label class="form-label">Department</label>
                         <select class="form-select" name="department" required>
-                            <option value="" disabled selected>Department chunein</option>
+                            <option value="" disabled selected>Choose Department </option>
                             <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"
                                     th:selected="${regForm != null and b == regForm.get('department')}"></option>
                         </select></div>
@@ -50,7 +50,7 @@
                         <input class="form-control" name="idCardNo" maxlength="40" required th:value="${regForm?.get('idCardNo')}"></div>
                     <div class="col-md-5"><label class="form-label">Branch</label>
                         <select class="form-select" name="branch" required>
-                            <option value="" disabled th:selected="${regForm == null}">Branch chunein</option>
+                            <option value="" disabled th:selected="${regForm == null}">Choose Branch </option>
                             <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${regForm != null and b == regForm.get('branch')}"></option>
                         </select></div>
                     <div class="col-md-3"><label class="form-label">Year</label>
@@ -65,7 +65,7 @@
                         <input class="form-control" type="password" id="rpw" name="password" minlength="8" required autocomplete="new-password">
                         <button class="btn btn-outline-secondary" type="button" data-toggle-password="#rpw"><i class="bi bi-eye"></i></button>
                     </div></div>
-                <div class="col-md-6"><label class="form-label">Password dobara</label>
+                <div class="col-md-6"><label class="form-label">enter Password again </label>
                     <input class="form-control" type="password" name="confirm" minlength="8" required autocomplete="new-password"></div>
 
                 <div class="d-none" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
@@ -74,7 +74,7 @@
                     <i class="bi bi-person-plus me-1"></i>Register</button></div>
             </div>
         </form>
-        <div class="text-center mt-3 small">Pehle se account hai? <a th:href="@{/login/{r}(r=${role})}">Login karein</a></div>
+        <div class="text-center mt-3 small">already have an account? <a th:href="@{/login/{r}(r=${role})}">Login </a></div>
     </div></div>
 </main>
 </body>

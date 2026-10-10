@@ -6,7 +6,7 @@
     <div class="row g-4">
         <div class="col-lg-5">
             <div class="card"><div class="card-body p-4">
-                <h5 class="mb-3" th:text="${form.id == null} ? 'Naya event' : 'Event edit karein'">Naya event</h5>
+                <h5 class="mb-3" th:text="${form.id == null} ? 'New event' : 'Edit event'">New event</h5>
                 <form th:action="@{/organizer/events}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="id" th:if="${form.id != null}" th:value="${form.id}">
                     <div class="text-center mb-3">
@@ -25,11 +25,11 @@
                         <textarea class="form-control" name="description" rows="4" maxlength="2900" th:text="${form.description}"></textarea></div>
 
                     <div class="mb-3">
-                        <label class="form-label">Kis department ke liye?</label>
+                        <label class="form-label">For which department?</label>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="checkbox" name="allDepartments" value="true" id="eAll"
                                    th:checked="${form.forAll}" data-dept-all="#eBranches">
-                            <label class="form-check-label fw-semibold" for="eAll">Sabhi departments (All)</label>
+                            <label class="form-check-label fw-semibold" for="eAll">All departments (All)</label>
                         </div>
                         <div id="eBranches" class="row g-1">
                             <div class="col-12" th:each="b, i : ${branches}">
@@ -40,7 +40,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-text">Ye event sirf chune hue departments ke student aur teacher ko dikhega.</div>
+                        <div class="form-text">This event will only be visible to students and teachers from selected departments.
+                            .</div>
                     </div>
 
                     <div class="d-flex gap-2">
@@ -51,9 +52,9 @@
             </div></div>
         </div>
         <div class="col-lg-7">
-            <h5 class="mb-3">Mere events</h5>
+            <h5 class="mb-3">My events</h5>
             <div class="card" th:if="${#lists.isEmpty(events)}"><div class="card-body coming-soon">
-                <i class="bi bi-calendar-plus"></i><h6 class="mt-2">Abhi koi event nahi. Pehla event add karein.</h6></div></div>
+                <i class="bi bi-calendar-plus"></i><h6 class="mt-2">There are no events yet. Add your first event.</h6></div></div>
             <div class="card mb-3" th:each="e : ${events}"><div class="card-body">
                 <div class="d-flex gap-3">
                     <div class="date-badge" th:style="${e.eventDateTime.isBefore(now)} ? 'background:#6c757d'">
@@ -74,7 +75,8 @@
                 <div class="d-flex flex-wrap gap-2 mt-3">
                     <a class="btn btn-sm btn-outline-primary" th:href="@{/organizer/events/{id}/registrations(id=${e.id})}"><i class="bi bi-list-ul me-1"></i>Registrations</a>
                     <a class="btn btn-sm btn-outline-secondary" th:href="@{/organizer/dashboard(edit=${e.id})}"><i class="bi bi-pencil me-1"></i>Edit</a>
-                    <form th:action="@{/organizer/events/{id}/delete(id=${e.id})}" method="post" data-confirm="Event aur uske registrations delete ho jayenge. Pakka?">
+                    <form th:action="@{/organizer/events/{id}/delete(id=${e.id})}" method="post" data-confirm="The event and its registrations will be deleted. Are you sure?
+">
                         <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash me-1"></i>Delete</button></form>
                 </div>
             </div></div>

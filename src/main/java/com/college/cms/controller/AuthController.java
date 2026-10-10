@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public String forgotPost(@RequestParam String identifier, RedirectAttributes ra) {
         resetService.start(identifier);
-        ra.addFlashAttribute("success", "Agar account mila to password reset link bhej diya gaya hai (30 minute valid).");
+        ra.addFlashAttribute("success", "If the account is found, a password reset link has been sent (valid for 30 minutes)\n.");
         return "redirect:/forgot-password";
     }
 
@@ -67,15 +67,15 @@ public class AuthController {
     public String resetPost(@RequestParam String token, @RequestParam String password,
                             @RequestParam String confirm, RedirectAttributes ra) {
         if (password.length() < 8 || !password.equals(confirm)) {
-            ra.addFlashAttribute("error", "Password kam se kam 8 character ka ho aur dono match karein.");
+            ra.addFlashAttribute("error", "Password must be at least 8 characters long and must match.");
             ra.addAttribute("token", token);
             return "redirect:/reset-password";
         }
         if (resetService.reset(token, password)) {
-            ra.addFlashAttribute("success", "Password badal gaya. Ab login karein.");
+            ra.addFlashAttribute("success", "Password changed. Login now.");
             return "redirect:/login";
         }
-        ra.addFlashAttribute("error", "Link galat ya expire ho gaya hai.");
+        ra.addFlashAttribute("error", "The link is incorrect or expired.");
         return "redirect:/forgot-password";
     }
 }

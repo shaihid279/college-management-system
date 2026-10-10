@@ -28,7 +28,7 @@
                     <td class="text-end"><a class="btn btn-sm btn-outline-primary" th:href="@{/student/receipt/{id}(id=${p.id})}">
                         <i class="bi bi-file-earmark-pdf me-1"></i>PDF</a></td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(payments)}"><td colspan="5" class="text-center text-muted py-4">Abhi koi payment record nahi hai.</td></tr>
+                <tr th:if="${#lists.isEmpty(payments)}"><td colspan="5" class="text-center text-muted py-4">There are no payment records yet.</td></tr>
                 </tbody>
             </table>
         </div>

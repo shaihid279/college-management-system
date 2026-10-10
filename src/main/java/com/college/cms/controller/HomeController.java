@@ -47,7 +47,7 @@ public class HomeController {
         message = message.trim();
         if (name.length() < 2 || name.length() > 100 || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
                 || message.length() < 10 || message.length() > 2000) {
-            ra.addFlashAttribute("error", "Naam, sahi email aur kam se kam 10 character ka message likhein.");
+            ra.addFlashAttribute("error", "Enter your name, valid email address, and a message of at least 10 characters");
             return "redirect:/contact";
         }
         ContactMessage c = new ContactMessage();
@@ -56,7 +56,7 @@ public class HomeController {
         c.setSubject(subject.trim().length() > 190 ? subject.trim().substring(0, 190) : subject.trim());
         c.setMessage(message);
         contacts.save(c);
-        ra.addFlashAttribute("success", "Dhanyavaad! Aapka message mil gaya, jaldi reply karenge.");
+        ra.addFlashAttribute("success", "Thank you! I received your message and will reply soon.");
         return "redirect:/contact";
     }
 }

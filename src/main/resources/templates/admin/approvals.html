@@ -3,11 +3,11 @@
 <body>
 <main class="container">
     <h1 class="h3 mb-1">Approval Requests</h1>
-    <p class="text-muted small">Teacher aur Event Organizer ka registration yahan aata hai. Approve karne par hi wo login kar payenge.
-        Ek baar approve hone ke baad us email ko dobara approval nahi lagega.</p>
+    <p class="text-muted small">Teacher and Event Organizer registrations appear here.
+        They can only log in after approval. Once an email is approved, it will not require approval again .</p>
 
     <div class="card" th:if="${#lists.isEmpty(pending)}"><div class="card-body coming-soon">
-        <i class="bi bi-person-check"></i><h5 class="mt-2">Koi pending request nahi hai</h5></div></div>
+        <i class="bi bi-person-check"></i><h5 class="mt-2">There are no pending requests</h5></div></div>
 
     <div class="card mb-3" th:each="u : ${pending}"><div class="card-body">
         <div class="d-flex flex-wrap gap-3 align-items-center">
@@ -27,13 +27,13 @@
             <div class="d-flex gap-2">
                 <form th:action="@{/admin/approvals/{id}/approve(id=${u.id})}" method="post">
                     <button class="btn btn-success" type="submit"><i class="bi bi-check-lg me-1"></i>Approve</button></form>
-                <form th:action="@{/admin/approvals/{id}/reject(id=${u.id})}" method="post" data-confirm="Ye request reject karein?">
+                <form th:action="@{/admin/approvals/{id}/reject(id=${u.id})}" method="post" data-confirm="reject this request ?">
                     <button class="btn btn-outline-danger" type="submit"><i class="bi bi-x-lg me-1"></i>Reject</button></form>
             </div>
         </div>
     </div></div>
 
-    <h5 class="mt-4 mb-2">Trusted emails (pehle approve ho chuke)</h5>
+    <h5 class="mt-4 mb-2">Trusted emails (alredy approve)</h5>
     <div class="card"><div class="table-responsive">
         <table class="table table-sm mb-0">
             <thead><tr><th>Email</th><th>Role</th><th>Approved by</th><th>Date</th></tr></thead>
@@ -42,7 +42,7 @@
                 <td th:text="${a.email}"></td><td th:text="${a.role}"></td><td th:text="${a.approvedBy}"></td>
                 <td th:text="${#temporals.format(a.approvedAt, 'dd MMM yyyy')}"></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(trusted)}"><td colspan="4" class="text-center text-muted py-3">Abhi koi nahi.</td></tr>
+            <tr th:if="${#lists.isEmpty(trusted)}"><td colspan="4" class="text-center text-muted py-3">nobody right now.</td></tr>
             </tbody>
         </table>
     </div></div>

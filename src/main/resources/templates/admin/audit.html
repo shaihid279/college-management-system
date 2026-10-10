@@ -3,7 +3,8 @@
 <body>
 <main class="container">
     <h1 class="h3 mb-1">Audit Log</h1>
-    <p class="text-muted small">Kis ne, kab, kiska fees / attendance / marks update kiya. Latest 300 entries.</p>
+    <p class="text-muted small">Who updated whose fees/attendance/marks, when. Latest 300 entries
+        .</p>
     <div class="card"><div class="table-responsive">
         <table class="table table-hover mb-0">
             <thead><tr><th>Time</th><th>By</th><th>Action</th><th>Student ID</th><th>Details</th></tr></thead>
@@ -15,7 +16,7 @@
                 <td th:text="${l.targetIdCard}"></td>
                 <td class="small" th:text="${l.details}"></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(logs)}"><td colspan="5" class="text-center text-muted py-4">Abhi koi entry nahi.</td></tr>
+            <tr th:if="${#lists.isEmpty(logs)}"><td colspan="5" class="text-center text-muted py-4">No entry right now".</td></tr>
             </tbody>
         </table>
     </div></div>

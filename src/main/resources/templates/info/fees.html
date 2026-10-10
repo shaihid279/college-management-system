@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h1 class="h3 mb-0"><i class="bi bi-cash-stack text-success me-2"></i>Fee Structure</h1>
         <button th:if="${me != null and me.admin}" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addFee">
-            <i class="bi bi-plus-lg me-1"></i>Fee add karein</button>
+            <i class="bi bi-plus-lg me-1"></i>Add Fee</button>
     </div>
 
     <div class="collapse mb-3" id="addFee" th:if="${me != null and me.admin}">
@@ -25,7 +25,7 @@
 
     <form th:action="@{/fees}" method="get" class="row g-2 mb-3">
         <div class="col-8 col-md-5"><select class="form-select" name="branch">
-            <option value="">Sab branches</option>
+            <option value="">All branches</option>
             <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${b == fBranch}"></option></select></div>
         <div class="col-4 col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Filter</button></div>
     </form>
@@ -45,7 +45,7 @@
                 <td class="text-end fw-bold" th:text="'₹' + ${#numbers.formatDecimal(f.total, 1, 'COMMA', 0, 'POINT')}"></td>
                 <td class="small text-muted" th:text="${f.notes}"></td>
                 <td th:if="${me != null and me.admin}">
-                    <form th:action="@{/admin/fees/{id}/delete(id=${f.id})}" method="post" data-confirm="Delete karein?">
+                    <form th:action="@{/admin/fees/{id}/delete(id=${f.id})}" method="post" data-confirm="Delete ?">
                         <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form></td>
             </tr>
             </tbody>

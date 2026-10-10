@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h1 class="h3 mb-0"><i class="bi bi-journal-check text-primary me-2"></i>Exam Schedule</h1>
         <button th:if="${me != null and me.admin}" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addExam">
-            <i class="bi bi-plus-lg me-1"></i>Exam add karein</button>
+            <i class="bi bi-plus-lg me-1"></i>add Exam</button>
     </div>
 
     <div class="collapse mb-3" id="addExam" th:if="${me != null and me.admin}">
@@ -37,7 +37,7 @@
 
     <div class="card" th:if="${#lists.isEmpty(exams)}"><div class="card-body coming-soon">
         <i class="bi bi-journal-check"></i><h5 class="mt-2">Exam schedule coming soon</h5>
-        <p class="text-muted mb-0">Date aate hi yahan dikh jayegi.</p></div></div>
+        <p class="text-muted mb-0">The date will be displayed here as soon as it arrives.</p></div></div>
 
     <div class="card" th:if="${!#lists.isEmpty(exams)}"><div class="table-responsive">
         <table class="table table-hover mb-0">
@@ -51,7 +51,7 @@
                 <td class="text-nowrap" th:text="${x.startTime != null} ? ${#temporals.format(x.startTime, 'hh:mm a')} : '-'"></td>
                 <td th:text="${x.room}"></td>
                 <td th:if="${me != null and me.admin}">
-                    <form th:action="@{/admin/exams/{id}/delete(id=${x.id})}" method="post" data-confirm="Exam delete karein?">
+                    <form th:action="@{/admin/exams/{id}/delete(id=${x.id})}" method="post" data-confirm=" delete Exam ?">
                         <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form></td>
             </tr>
             </tbody>

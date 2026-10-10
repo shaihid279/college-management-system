@@ -4,7 +4,7 @@
 <main class="container">
     <div class="text-center mb-4">
         <h1 class="h2">Contact Us</h1>
-        <p class="text-muted">Koi sawal ya suggestion? Hume likhiye, hum jaldi reply karenge.</p>
+        <p class="text-muted">Any questions or suggestions? Write to us, we'll respond quickly.</p>
     </div>
     <div class="row g-4">
         <div class="col-lg-5">
@@ -29,7 +29,7 @@
             <div class="card"><div class="card-body p-4">
                 <form th:action="@{/contact}" method="post">
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Aapka naam</label>
+                        <div class="col-md-6"><label class="form-label">Your name</label>
                             <input class="form-control" name="name" maxlength="100" required></div>
                         <div class="col-md-6"><label class="form-label">Email</label>
                             <input class="form-control" type="email" name="email" maxlength="120" required></div>
@@ -40,7 +40,7 @@
                         <div class="d-none" aria-hidden="true">
                             <input name="website" tabindex="-1" autocomplete="off">
                         </div>
-                        <div class="col-12"><button class="btn btn-primary px-4" type="submit"><i class="bi bi-send me-1"></i>Message bhejein</button></div>
+                        <div class="col-12"><button class="btn btn-primary px-4" type="submit"><i class="bi bi-send me-1"></i> Send Message </button></div>
                     </div>
                 </form>
             </div></div>

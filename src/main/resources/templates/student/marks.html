@@ -21,7 +21,7 @@
                 <td th:text="${m.percentage} + '%'">0%</td>
                 <td><span class="badge" th:classappend="${m.percentage >= 40} ? 'text-bg-success' : 'text-bg-danger'" th:text="${m.grade}">A</span></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(marks)}"><td colspan="5" class="text-center text-muted py-4">Abhi koi marks add nahi hue.</td></tr>
+            <tr th:if="${#lists.isEmpty(marks)}"><td colspan="5" class="text-center text-muted py-4">No marks have been added yet.</td></tr>
             </tbody>
         </table>
     </div></div>

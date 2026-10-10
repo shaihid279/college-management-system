@@ -7,7 +7,7 @@
             <div class="col-md-7 text-center text-md-start">
                 <span class="badge bg-light text-primary mb-3">Smart College Portal</span>
                 <h1 class="display-5 fw-bold">Complete College, at one place.</h1>
-                <p class="lead opacity-75">Fees, attendance, marks, notices, events aur placements. Sab kuch secure login ke saath, mobile aur laptop dono par.</p>
+                <p class="lead opacity-75">Fees, attendance, marks, notices, events and placements. all with secure login .</p>
                 <div class="d-flex gap-2 justify-content-center justify-content-md-start flex-wrap">
                     <a th:if="${me == null}" th:href="@{/login}" class="btn btn-light btn-lg px-4"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>
                     <a th:if="${me == null}" th:href="@{/register}" class="btn btn-warning btn-lg px-4"><i class="bi bi-person-plus me-1"></i>Register</a>
@@ -23,32 +23,32 @@
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="${me != null and !me.student} ? @{/dashboard} : @{/student/dashboard}">
             <div class="feature-icon bg-grad-2 mb-2"><i class="bi bi-graph-up"></i></div>
-            <h6 class="mb-1">Attendance &amp; Marks</h6><p class="small text-muted mb-0">Graphs ke saath, 75% se kam par warning.</p></a></div>
+            <h6 class="mb-1">Attendance &amp; Marks</h6><p class="small text-muted mb-0">with Graphs, warning if attendance less than 75%.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="${me != null and !me.student} ? @{/dashboard} : @{/student/fees}">
             <div class="feature-icon bg-grad-3 mb-2"><i class="bi bi-receipt"></i></div>
-            <h6 class="mb-1">Fees &amp; Receipt PDF</h6><p class="small text-muted mb-0">Pending fees dekho, receipt download karo.</p></a></div>
+            <h6 class="mb-1">Fees &amp; Receipt PDF</h6><p class="small text-muted mb-0">See Pending fees here , receipt download .</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/events}">
             <div class="feature-icon bg-grad-1 mb-2"><i class="bi bi-calendar-event"></i></div>
-            <h6 class="mb-1">Events</h6><p class="small text-muted mb-0">College events dekho aur register karo.</p></a></div>
+            <h6 class="mb-1">Events</h6><p class="small text-muted mb-0">College events and register here.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/placements}">
             <div class="feature-icon bg-grad-4 mb-2"><i class="bi bi-briefcase"></i></div>
-            <h6 class="mb-1">Placements</h6><p class="small text-muted mb-0">Companies, packages aur placed students.</p></a></div>
+            <h6 class="mb-1">Placements</h6><p class="small text-muted mb-0">Companies, packages and placed students.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/notices}">
             <div class="feature-icon bg-grad-3 mb-2"><i class="bi bi-megaphone"></i></div>
-            <h6 class="mb-1">Notices</h6><p class="small text-muted mb-0">Chhutti aur important announcements.</p></a></div>
+            <h6 class="mb-1">Notices</h6><p class="small text-muted mb-0">Holidays and important announcements.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/exams}">
             <div class="feature-icon bg-grad-1 mb-2"><i class="bi bi-journal-check"></i></div>
-            <h6 class="mb-1">Exam Schedule</h6><p class="small text-muted mb-0">Exam ki dates ek jagah.</p></a></div>
+            <h6 class="mb-1">Exam Schedule</h6><p class="small text-muted mb-0">Exam dates at one place.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/timetable}">
             <div class="feature-icon bg-grad-2 mb-2"><i class="bi bi-clock"></i></div>
-            <h6 class="mb-1">Timetable</h6><p class="small text-muted mb-0">Branch aur year ke hisaab se.</p></a></div>
+            <h6 class="mb-1">Timetable</h6><p class="small text-muted mb-0">Branch and year Wise.</p></a></div>
         <div class="col-6 col-lg-3"><a class="card card-hover h-100 p-3 text-decoration-none text-reset" th:href="@{/toppers}">
             <div class="feature-icon bg-grad-4 mb-2"><i class="bi bi-trophy"></i></div>
-            <h6 class="mb-1">Toppers</h6><p class="small text-muted mb-0">Hall of Fame, branch aur year wise.</p></a></div>
+            <h6 class="mb-1">Toppers</h6><p class="small text-muted mb-0">Hall of Fame, branch and year wise.</p></a></div>
     </div>
 
     <div class="card mb-4" th:if="${me == null}"><div class="card-body p-4">
-        <h5 class="mb-3">Aap kaun hain?</h5>
+        <h5 class="mb-3">Who are you?</h5>
         <div class="row g-3">
             <div class="col-6 col-lg-3 text-center"><i class="bi bi-mortarboard-fill fs-1 text-primary"></i><div class="fw-semibold mb-2">Student</div>
                 <a class="btn btn-sm btn-primary" th:href="@{/login/student}">Login</a>

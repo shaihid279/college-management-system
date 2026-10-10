@@ -17,10 +17,10 @@
                     <textarea class="form-control" name="content" rows="3" maxlength="2900"></textarea></div>
 
                 <div class="mb-3">
-                    <label class="form-label">Kis department ke liye?</label>
+                    <label class="form-label">for which department?</label>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="allDepartments" value="true" id="nAll" checked data-dept-all="#nBranches">
-                        <label class="form-check-label fw-semibold" for="nAll">Sabhi departments (All)</label>
+                        <label class="form-check-label fw-semibold" for="nAll">All departments (All)</label>
                     </div>
                     <div id="nBranches" class="row g-1 d-none">
                         <div class="col-md-6" th:each="b, i : ${branches}">
@@ -30,20 +30,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-text">Sirf chune hue departments ke student aur teacher ko ye notice dikhega.</div>
+                    <div class="form-text">Only students and teachers of selected departments will see this notice.
+                        </div>
                 </div>
 
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" name="important" value="true" id="imp">
-                    <label class="form-check-label" for="imp">Important (laal highlight hoga, jaise chhutti ka notice)</label>
+                    <label class="form-check-label" for="imp">Important </label>
                 </div>
-                <button class="btn btn-primary" type="submit">Post karein</button>
+                <button class="btn btn-primary" type="submit">Post</button>
             </form>
         </div></div>
     </div>
 
     <div th:if="${#lists.isEmpty(notices)}" class="card"><div class="card-body coming-soon">
-        <i class="bi bi-megaphone"></i><h5 class="mt-2">Abhi koi notice nahi hai</h5></div></div>
+        <i class="bi bi-megaphone"></i><h5 class="mt-2">There is no notice yet.</h5></div></div>
 
     <div class="card mb-3" th:each="n : ${notices}"><div class="card-body notice-item rounded" th:classappend="${n.important} ? 'important'">
         <div class="d-flex justify-content-between align-items-start gap-2">
@@ -51,7 +52,8 @@
                 <span th:text="${n.title}">Title</span>
                 <span class="badge text-bg-danger ms-1" th:if="${n.important}">Important</span>
             </h5>
-            <form th:if="${me != null and me.admin}" th:action="@{/admin/notices/{id}/delete(id=${n.id})}" method="post" data-confirm="Ye notice delete karein?">
+            <form th:if="${me != null and me.admin}" th:action="@{/admin/notices/{id}/delete(id=${n.id})}" method="post" data-confirm="Delete this notice?
+">
                 <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
             </form>
         </div>

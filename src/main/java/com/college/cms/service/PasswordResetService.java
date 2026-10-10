@@ -61,8 +61,8 @@ public class PasswordResetService {
                 m.setFrom(from);
                 m.setTo(user.getEmail());
                 m.setSubject("CampusCore - Password reset");
-                m.setText("Namaste " + user.getFullName() + ",\n\nPassword reset karne ke liye ye link kholo (30 minute valid):\n" + link
-                        + "\n\nAgar aapne request nahi ki to ise ignore karein.");
+                m.setText("Namaste " + user.getFullName() + ",\n\nOpen this link to reset your password (valid for 30 minutes:\n" + link
+                        + "\n\nIf you didn't request this, please ignore it.");
                 sender.send(m);
                 return;
             } catch (Exception e) {

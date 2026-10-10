@@ -66,17 +66,17 @@ public class OrganizerController {
         if (id != null) {
             e = eventRepo.findById(id).orElse(null);
             if (e == null || e.getCreatedBy() == null || !e.getCreatedBy().getId().equals(u.getId())) {
-                ra.addFlashAttribute("error", "Ye event aapka nahi hai.");
+                ra.addFlashAttribute("error", "This event does not belong to you.");
                 return "redirect:/organizer/dashboard";
             }
         }
         if (title.isBlank() || title.length() > 190) {
-            ra.addFlashAttribute("error", "Event ka title likhein (max 190 character).");
+            ra.addFlashAttribute("error", "Enter an event title (max 190 characters).");
             return "redirect:/organizer/dashboard";
         }
         String target = audience.buildTarget(allDepartments, branches, branchService.all());
         if (target == null) {
-            ra.addFlashAttribute("error", "Kam se kam ek department chunein ya 'Sabhi departments' tick karein.");
+            ra.addFlashAttribute("error", "Select at least one department or tick 'All departments'.");
             return "redirect:/organizer/dashboard";
         }
         try {
@@ -89,7 +89,7 @@ public class OrganizerController {
             ra.addFlashAttribute("error", ex.getMessage());
             return "redirect:/organizer/dashboard";
         } catch (IOException ex) {
-            ra.addFlashAttribute("error", "Banner save nahi ho paya.");
+            ra.addFlashAttribute("error", "The banner could not be saved.");
             return "redirect:/organizer/dashboard";
         }
         e.setTitle(title.trim());
@@ -99,7 +99,7 @@ public class OrganizerController {
         e.setTargetBranches(target);
         e.setCreatedBy(u);
         eventRepo.save(e);
-        ra.addFlashAttribute("success", id == null ? "Event add ho gaya." : "Event update ho gaya.");
+        ra.addFlashAttribute("success", id == null ? "Event added." : "Event updated.");
         return "redirect:/organizer/dashboard";
     }
 
@@ -112,9 +112,9 @@ public class OrganizerController {
             regRepo.deleteByEvent(e);
             storage.delete(e.getBanner());
             eventRepo.delete(e);
-            ra.addFlashAttribute("success", "Event delete ho gaya.");
+            ra.addFlashAttribute("success", "Event deleted.");
         } else {
-            ra.addFlashAttribute("error", "Ye event aapka nahi hai.");
+            ra.addFlashAttribute("error", "This event does not belong to you.");
         }
         return "redirect:/organizer/dashboard";
     }
@@ -124,7 +124,7 @@ public class OrganizerController {
         User u = me(auth);
         Event e = eventRepo.findById(id).orElse(null);
         if (e == null || e.getCreatedBy() == null || !e.getCreatedBy().getId().equals(u.getId())) {
-            ra.addFlashAttribute("error", "Ye event aapka nahi hai.");
+            ra.addFlashAttribute("error", "This event does not belong to you.");
             return "redirect:/organizer/dashboard";
         }
         List<EventRegistration> regs = regRepo.findByEventOrderByRegisteredAtAsc(e);

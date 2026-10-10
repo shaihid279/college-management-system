@@ -5,7 +5,7 @@
     <div class="d-flex align-items-center gap-3 mb-4">
         <th:block th:replace="~{fragments/layout :: avatar(${me}, 64)}"></th:block>
         <div>
-            <h1 class="h3 mb-1">Namaste, <span th:text="${me.fullName}">Name</span> 👋</h1>
+            <h1 class="h3 mb-1">Welcome, <span th:text="${me.fullName}">Name</span> 👋</h1>
             <span class="badge text-bg-primary me-1" th:text="${s.idCardNo}">ID</span>
             <span class="badge text-bg-secondary me-1" th:text="${s.branch}">Branch</span>
             <span class="badge text-bg-info" th:text="'Year ' + ${s.year}">Year</span>
@@ -14,8 +14,8 @@
 
     <div class="alert alert-danger d-flex align-items-start gap-2" th:if="${s.attendanceLow}">
         <i class="bi bi-exclamation-octagon-fill fs-4"></i>
-        <div><strong>Attendance warning!</strong> Aapki attendance
-            <strong th:text="${s.attendancePercent} + '%'">70%</strong> hai, jo 75% se kam hai. Classes regular attend karein.</div>
+        <div><strong>Attendance warning!</strong> Your attendance
+            <strong th:text="${s.attendancePercent} + '%'">70%</strong> is less than 75% , you should attend classes regularly.</div>
     </div>
 
     <div class="row g-3 mb-4">
@@ -48,7 +48,7 @@
                 <canvas data-chart="doughnut" data-labels="Present|Absent"
                         th:data-values="|${s.attendedClasses},${s.absentClasses}|" data-colors="#10b981,#ef4444"></canvas>
             </div>
-            <div class="text-muted" th:if="${s.totalClasses == 0}">Attendance abhi update nahi hui.</div>
+            <div class="text-muted" th:if="${s.totalClasses == 0}">Attendance not updated yet.</div>
             <div class="small text-muted mt-2" th:if="${s.totalClasses > 0}"
                  th:text="${s.attendedClasses} + ' / ' + ${s.totalClasses} + ' classes attend ki'"></div>
         </div></div></div>
@@ -58,17 +58,17 @@
                 <canvas data-chart="doughnut" data-labels="Paid|Pending"
                         th:data-values="|${s.paidFees},${s.pendingFees}|" data-colors="#4f46e5,#f59e0b"></canvas>
             </div>
-            <div class="text-muted" th:if="${s.totalFees.signum() == 0}">Fees details abhi add nahi hui.</div>
-            <a class="btn btn-sm btn-outline-primary mt-2" th:href="@{/student/fees}">Receipts dekhein</a>
+            <div class="text-muted" th:if="${s.totalFees.signum() == 0}">The details for fees haven't been updated yet.</div>
+            <a class="btn btn-sm btn-outline-primary mt-2" th:href="@{/student/fees}">See Receipts </a>
         </div></div></div>
     </div>
 
     <div class="card"><div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0"><i class="bi bi-megaphone-fill text-danger me-2"></i>Notices</h5>
-            <a th:href="@{/notices}" class="small">Sab dekhein</a>
+            <a th:href="@{/notices}" class="small">see all</a>
         </div>
-        <div th:if="${#lists.isEmpty(notices)}" class="text-muted">Abhi koi notice nahi hai.</div>
+        <div th:if="${#lists.isEmpty(notices)}" class="text-muted">There are no notices yet.</div>
         <div th:each="n : ${notices}" class="notice-item p-3 mb-2 rounded" th:classappend="${n.important} ? 'important'">
             <strong th:text="${n.title}">Title</strong>
             <span class="badge text-bg-danger ms-1" th:if="${n.important}">Important</span>

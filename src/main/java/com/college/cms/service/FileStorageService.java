@@ -20,7 +20,7 @@ public class FileStorageService {
 
     private final StoredFileRepository files;
 
-    /** Image database me save karta hai; "folder/uuid.ext" return karta hai. Khali file ho to null. */
+    /** Saves an image in the database and returns "folder/uuid.ext". Returns null for an empty file. */
     public String saveImage(MultipartFile file, String folder) throws IOException {
         if (file == null || file.isEmpty()) return null;
         String original = file.getOriginalFilename() == null ? "" : file.getOriginalFilename();
@@ -29,11 +29,11 @@ public class FileStorageService {
         String mime = TYPES.get(ext);
         String ct = file.getContentType() == null ? "" : file.getContentType();
         if (mime == null || !ct.startsWith("image/")) {
-            throw new IllegalArgumentException("Sirf JPG, PNG ya WEBP image allowed hai.");
+            throw new IllegalArgumentException("Only JPG, PNG or WEBP images are allowed.");
         }
         byte[] data = file.getBytes();
-        if (data.length > MAX_BYTES) throw new IllegalArgumentException("Image 2 MB se badi hai.");
-        if (!looksLikeImage(data)) throw new IllegalArgumentException("Ye valid image file nahi lagti.");
+        if (data.length > MAX_BYTES) throw new IllegalArgumentException("The image is larger than 2 MB.");
+        if (!looksLikeImage(data)) throw new IllegalArgumentException("This does not look like a valid image file.");
 
         StoredFile f = new StoredFile();
         f.setPath(folder + "/" + UUID.randomUUID() + "." + ext);

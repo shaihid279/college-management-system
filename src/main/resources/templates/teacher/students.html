@@ -5,12 +5,12 @@
     <h1 class="h3 mb-3">Students</h1>
     <div class="card mb-3"><div class="card-body">
         <form th:action="@{/teacher/students}" method="get" class="row g-2 align-items-center">
-            <div class="col-12 col-md-4"><input class="form-control" name="q" th:value="${q}" placeholder="ID card number ya naam"></div>
+            <div class="col-12 col-md-4"><input class="form-control" name="q" th:value="${q}" placeholder="ID card number or name"></div>
             <div class="col-6 col-md-3"><select class="form-select" name="branch">
-                <option value="">Sab branches</option>
+                <option value="">All branches</option>
                 <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${b == fBranch}"></option></select></div>
             <div class="col-6 col-md-2"><select class="form-select" name="year">
-                <option value="">Sab years</option>
+                <option value="">All years</option>
                 <option th:each="y : ${#numbers.sequence(1, 4)}" th:value="${y}" th:text="'Year ' + ${y}" th:selected="${fYear != null and fYear == y}"></option></select></div>
             <div class="col-6 col-md-2"><div class="form-check">
                 <input class="form-check-input" type="checkbox" name="pendingOnly" value="true" id="po" th:checked="${pendingOnly}">
@@ -37,7 +37,7 @@
                     th:text="'₹' + ${#numbers.formatDecimal(s.pendingFees, 1, 'COMMA', 0, 'POINT')}">0</td>
                 <td class="text-end"><a class="btn btn-sm btn-primary" th:href="@{/teacher/students/{id}(id=${s.id})}">Open</a></td>
             </tr>
-            <tr th:if="${#lists.isEmpty(students)}"><td colspan="6" class="text-center text-muted py-4">Koi student nahi mila.</td></tr>
+            <tr th:if="${#lists.isEmpty(students)}"><td colspan="6" class="text-center text-muted py-4">no students found.</td></tr>
             </tbody>
         </table>
     </div></div>
