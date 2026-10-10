@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Admin Dashboard', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">Admin Dashboard</h1>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><a class="text-decoration-none" th:href="@{/admin/users(role=STUDENT)}"><div class="card card-hover"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-1"><i class="bi bi-people"></i></div>
+            <div><div class="small text-muted">Students</div><div class="h4 mb-0" th:text="${students}">0</div></div></div></div></a></div>
+        <div class="col-6 col-lg-3"><a class="text-decoration-none" th:href="@{/admin/users(role=TEACHER)}"><div class="card card-hover"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-2"><i class="bi bi-person-workspace"></i></div>
+            <div><div class="small text-muted">Teachers</div><div class="h4 mb-0" th:text="${teachers}">0</div></div></div></div></a></div>
+        <div class="col-6 col-lg-3"><a class="text-decoration-none" th:href="@{/admin/users(role=ORGANIZER)}"><div class="card card-hover"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-4"><i class="bi bi-calendar-event"></i></div>
+            <div><div class="small text-muted">Organizers</div><div class="h4 mb-0" th:text="${organizers}">0</div></div></div></div></a></div>
+        <div class="col-6 col-lg-3"><a class="text-decoration-none" th:href="@{/notices}"><div class="card card-hover"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-3"><i class="bi bi-megaphone"></i></div>
+            <div><div class="small text-muted">Notices</div><div class="h4 mb-0" th:text="${noticeCount}">0</div></div></div></div></a></div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-4"><div class="card h-100"><div class="card-body">
+            <h6 class="mb-3">Pending kaam</h6>
+            <a class="list-row" th:href="@{/admin/approvals}"><i class="bi bi-person-check fs-5 text-primary"></i>
+                <span class="flex-grow-1">Approval requests (Teacher / Organizer)</span><span class="badge text-bg-danger" th:text="${pendingApprovals}">0</span></a>
+            <a class="list-row" th:href="@{/admin/feedback}"><i class="bi bi-chat-dots fs-5 text-primary"></i>
+
+                <span class="flex-grow-1">Open feedback / grievance</span><span class="badge text-bg-danger" th:text="${openFeedback}">0</span></a>
+            <a class="list-row" th:href="@{/admin/contacts}"><i class="bi bi-envelope fs-5 text-primary"></i>
+                <span class="flex-grow-1">Naye contact messages</span><span class="badge text-bg-danger" th:text="${unreadContacts}">0</span></a>
+            <a class="list-row" th:href="@{/placements}"><i class="bi bi-briefcase fs-5 text-primary"></i>
+                <span class="flex-grow-1 small" th:text="${placementStatus}">Placement status</span></a>
+        </div></div></div>
+        <div class="col-lg-8"><div class="card h-100"><div class="card-body">
+            <div class="d-flex justify-content-between"><h6 class="mb-3">Recent activity</h6><a th:href="@{/admin/audit}" class="small">Poora audit log</a></div>
+            <div class="text-muted" th:if="${#lists.isEmpty(recent)}">Abhi koi activity nahi.</div>
+            <div class="list-row" th:each="l : ${recent}">
+                <span class="badge text-bg-secondary" th:text="${l.action}">ACTION</span>
+                <div class="flex-grow-1 small"><strong th:text="${l.actor}"></strong> <span class="text-muted" th:text="${l.details}"></span></div>
+                <span class="small text-muted text-nowrap" th:text="${#temporals.format(l.createdAt, 'dd MMM, hh:mm a')}"></span>
+            </div>
+        </div></div></div>
+    </div>
+
+    <h6 class="mt-4 mb-2 text-muted">Quick links</h6>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/notices}">Notices</a>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/placements}">Placements</a>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/toppers}">Toppers</a>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/fees}">Fee Structure</a>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/exams}">Exam Schedule</a>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/timetable}">Timetable</a>
+    </div>
+</main>
+</body>
+</html>

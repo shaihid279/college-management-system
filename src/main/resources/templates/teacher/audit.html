@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('My Activity', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">Meri Activity (Audit Log)</h1>
+    <div class="card"><div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Time</th><th>Action</th><th>Student ID</th><th>Details</th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${logs}">
+                <td class="text-nowrap small" th:text="${#temporals.format(l.createdAt, 'dd MMM yyyy, hh:mm a')}"></td>
+                <td><span class="badge text-bg-secondary" th:text="${l.action}"></span></td>
+                <td th:text="${l.targetIdCard}"></td>
+                <td class="small" th:text="${l.details}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(logs)}"><td colspan="4" class="text-center text-muted py-4">Abhi koi activity nahi.</td></tr>
+            </tbody>
+        </table>
+    </div></div>
+</main>
+</body>
+</html>

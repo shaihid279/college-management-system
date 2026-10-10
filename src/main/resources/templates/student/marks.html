@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('My Marks', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">My Marks</h1>
+    <div class="card mb-3" th:if="${!#lists.isEmpty(marks)}"><div class="card-body">
+        <div class="chart-box">
+            <canvas data-chart="bar" data-max="100" data-colors="#4f46e5"
+                    th:data-labels="${#strings.listJoin(marks.![subject], '|')}"
+                    th:data-values="${#strings.listJoin(marks.![percentage], ',')}"></canvas>
+        </div>
+    </div></div>
+    <div class="card"><div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Subject</th><th>Exam</th><th>Marks</th><th>%</th><th>Grade</th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${marks}">
+                <td th:text="${m.subject}">Subject</td>
+                <td th:text="${m.examName}">Exam</td>
+                <td th:text="${#numbers.formatDecimal(m.marksObtained, 1, 1)} + ' / ' + ${#numbers.formatDecimal(m.maxMarks, 1, 0)}">0/100</td>
+                <td th:text="${m.percentage} + '%'">0%</td>
+                <td><span class="badge" th:classappend="${m.percentage >= 40} ? 'text-bg-success' : 'text-bg-danger'" th:text="${m.grade}">A</span></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(marks)}"><td colspan="5" class="text-center text-muted py-4">Abhi koi marks add nahi hue.</td></tr>
+            </tbody>
+        </table>
+    </div></div>
+</main>
+</body>
+</html>

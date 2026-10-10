@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Students', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">Students</h1>
+    <div class="card mb-3"><div class="card-body">
+        <form th:action="@{/teacher/students}" method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-4"><input class="form-control" name="q" th:value="${q}" placeholder="ID card number ya naam"></div>
+            <div class="col-6 col-md-3"><select class="form-select" name="branch">
+                <option value="">Sab branches</option>
+                <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${b == fBranch}"></option></select></div>
+            <div class="col-6 col-md-2"><select class="form-select" name="year">
+                <option value="">Sab years</option>
+                <option th:each="y : ${#numbers.sequence(1, 4)}" th:value="${y}" th:text="'Year ' + ${y}" th:selected="${fYear != null and fYear == y}"></option></select></div>
+            <div class="col-6 col-md-2"><div class="form-check">
+                <input class="form-check-input" type="checkbox" name="pendingOnly" value="true" id="po" th:checked="${pendingOnly}">
+                <label class="form-check-label small" for="po">Pending fees</label></div></div>
+            <div class="col-6 col-md-1"><button class="btn btn-primary w-100" type="submit"><i class="bi bi-search"></i></button></div>
+        </form>
+    </div></div>
+
+    <div class="small text-muted mb-2" th:text="${#lists.size(students)} + ' student(s) mile'"></div>
+    <div class="card"><div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Student</th><th>ID Card</th><th>Branch</th><th>Attendance</th><th class="text-end">Pending</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${students}">
+                <td><div class="d-flex align-items-center gap-2">
+                    <th:block th:replace="~{fragments/layout :: avatar(${s.user}, 36)}"></th:block>
+                    <div><div class="fw-semibold" th:text="${s.user.fullName}">Name</div><div class="small text-muted" th:text="'Year ' + ${s.year}"></div></div>
+                </div></td>
+                <td th:text="${s.idCardNo}">ID</td>
+                <td th:text="${s.branch}">Branch</td>
+                <td><span class="badge" th:classappend="${s.attendanceLow} ? 'text-bg-danger' : 'text-bg-success'"
+                          th:text="${s.totalClasses > 0} ? ${s.attendancePercent} + '%' : 'NA'">80%</span></td>
+                <td class="text-end" th:classappend="${s.pendingFees.signum() > 0} ? 'text-danger fw-semibold'"
+                    th:text="'₹' + ${#numbers.formatDecimal(s.pendingFees, 1, 'COMMA', 0, 'POINT')}">0</td>
+                <td class="text-end"><a class="btn btn-sm btn-primary" th:href="@{/teacher/students/{id}(id=${s.id})}">Open</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(students)}"><td colspan="6" class="text-center text-muted py-4">Koi student nahi mila.</td></tr>
+            </tbody>
+        </table>
+    </div></div>
+</main>
+</body>
+</html>

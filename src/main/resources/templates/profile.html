@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('My Profile', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">My Profile</h1>
+    <form th:action="@{/profile}" method="post" enctype="multipart/form-data">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card text-center"><div class="card-body p-4">
+                    <img id="photoPreview" class="photo-preview mb-3" alt="Profile photo"
+                         th:src="${user.photo != null} ? @{'/uploads/' + ${user.photo}} : @{/images/avatar.svg}">
+                    <h5 class="mb-0" th:text="${user.fullName}">Name</h5>
+                    <span class="badge text-bg-primary mt-1" th:text="${user.role}">ROLE</span>
+                    <div class="small text-muted mt-1" th:text="'@' + ${user.username}">@user</div>
+                    <hr>
+                    <div class="text-start">
+                        <label class="form-label small fw-semibold">Profile photo (JPG/PNG/WEBP, max 2 MB)</label>
+                        <input class="form-control form-control-sm" type="file" name="photo" accept="image/png,image/jpeg,image/webp" data-preview="#photoPreview">
+                        <div class="form-check mt-2" th:if="${user.photo != null}">
+                            <input class="form-check-input" type="checkbox" name="removePhoto" value="true" id="rm">
+                            <label class="form-check-label small" for="rm">Photo hata dein</label>
+                        </div>
+                    </div>
+                </div></div>
+                <div class="card mt-3" th:if="${student != null}"><div class="card-body">
+                    <h6 class="mb-3">Academic details</h6>
+                    <div class="d-flex justify-content-between small mb-2"><span class="text-muted">ID Card No</span><strong th:text="${student.idCardNo}">ID</strong></div>
+                    <div class="d-flex justify-content-between small mb-2"><span class="text-muted">Branch</span><strong th:text="${student.branch}">Branch</strong></div>
+                    <div class="d-flex justify-content-between small"><span class="text-muted">Year</span><strong th:text="${student.year}">1</strong></div>
+                </div></div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card"><div class="card-body p-4">
+                    <h5 class="mb-3">Personal information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Poora naam</label>
+                            <input class="form-control" name="fullName" th:value="${user.fullName}" maxlength="100" required></div>
+                        <div class="col-md-6"><label class="form-label">Phone</label>
+                            <input class="form-control" name="phone" th:value="${user.phone}" maxlength="15" inputmode="tel"></div>
+                        <div class="col-12"><label class="form-label">Email</label>
+                            <input class="form-control" type="email" name="email" th:value="${user.email}" maxlength="120"></div>
+                        <div class="col-12"><label class="form-label">Address</label>
+                            <textarea class="form-control" name="address" rows="3" maxlength="290" th:text="${user.address}"></textarea></div>
+                    </div>
+                    <div class="col-12" th:if="${user.teacher}"><label class="form-label">Department</label>
+                        <select class="form-select" name="department">
+                            <option value="">-- chunein --</option>
+                            <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${b == user.department}"></option>
+                        </select>
+                        <div class="form-text">Isi department ke notice aur events aapko dikhenge.</div></div>
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button class="btn btn-primary px-4" type="submit"><i class="bi bi-check2-circle me-1"></i>Save changes</button>
+                        <a class="btn btn-outline-secondary" th:href="@{/change-password}"><i class="bi bi-key me-1"></i>Change password</a>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Users', ~{::main})}">
+<body>
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="h3 mb-0">Users</h1>
+        <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addUser"><i class="bi bi-person-plus me-1"></i>Naya account</button>
+    </div>
+
+    <div class="collapse mb-3" id="addUser"><div class="card"><div class="card-body">
+        <form th:action="@{/admin/users}" method="post" class="row g-2">
+            <div class="col-md-3"><label class="form-label small">Role</label>
+                <select class="form-select" name="role" id="roleSel">
+                    <option value="STUDENT">Student</option><option value="TEACHER">Teacher</option><option value="ORGANIZER">Event Organizer</option>
+                </select></div>
+            <div class="col-md-3"><label class="form-label small">Username</label>
+                <input class="form-control" name="username" minlength="3" maxlength="40" required></div>
+            <div class="col-md-3"><label class="form-label small">Poora naam</label>
+                <input class="form-control" name="fullName" required></div>
+            <div class="col-md-3"><label class="form-label small">Password (min 8)</label>
+                <input class="form-control" type="text" name="password" minlength="8" required autocomplete="off"></div>
+            <div class="col-md-4"><label class="form-label small">Email</label><input class="form-control" type="email" name="email"></div>
+            <div class="col-md-4"><label class="form-label small">Phone</label><input class="form-control" name="phone" maxlength="15"></div>
+            <div class="col-md-4 d-none" id="deptField"><label class="form-label small">Department (Teacher ke liye)</label>
+                <select class="form-select" name="department">
+                    <option value="">--</option>
+                    <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"></option>
+                </select></div>
+            <div class="col-12" id="stuFields"><div class="row g-2">
+                <div class="col-md-3"><label class="form-label small">ID Card No</label><input class="form-control" name="idCardNo" data-req="1"></div>
+                <div class="col-md-4"><label class="form-label small">Branch</label>
+                    <select class="form-select" name="branch" data-req="1"><option th:each="b : ${branches}" th:value="${b}" th:text="${b}"></option></select></div>
+                <div class="col-6 col-md-2"><label class="form-label small">Year</label>
+                    <select class="form-select" name="year"><option th:each="y : ${#numbers.sequence(1, 4)}" th:value="${y}" th:text="${y}"></option></select></div>
+                <div class="col-6 col-md-3"><label class="form-label small">Total fees (₹)</label><input class="form-control" type="number" min="0" step="0.01" name="totalFees" value="0"></div>
+            </div></div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Account banayein</button></div>
+        </form>
+    </div></div></div>
+
+    <div class="btn-group mb-3 flex-wrap">
+        <a class="btn btn-sm" th:classappend="${fRole == ''} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/users}">Sab</a>
+        <a class="btn btn-sm" th:classappend="${fRole == 'STUDENT'} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/users(role=STUDENT)}">Students</a>
+        <a class="btn btn-sm" th:classappend="${fRole == 'TEACHER'} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/users(role=TEACHER)}">Teachers</a>
+        <a class="btn btn-sm" th:classappend="${fRole == 'ORGANIZER'} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/users(role=ORGANIZER)}">Organizers</a>
+        <a class="btn btn-sm" th:classappend="${fRole == 'ADMIN'} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/users(role=ADMIN)}">Admins</a>
+    </div>
+
+    <div class="card"><div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Password reset</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td><div class="d-flex align-items-center gap-2">
+                    <th:block th:replace="~{fragments/layout :: avatar(${u}, 36)}"></th:block>
+                    <div><div class="fw-semibold" th:text="${u.fullName}">Name</div>
+                        <div class="small text-muted"><span th:text="'@' + ${u.username}"></span>
+                            <span th:if="${studentByUser[u.id] != null}" th:text="' | ' + ${studentByUser[u.id].idCardNo}"></span>
+                            <span th:if="${u.department != null and !u.department.isBlank()}" th:text="' | ' + ${u.department}"></span></div></div>
+                </div></td>
+                <td><span class="badge text-bg-primary" th:text="${u.role}">ROLE</span></td>
+                <td>
+                    <span class="badge text-bg-warning" th:if="${u.pending}">Approval pending</span>
+                    <span class="badge" th:unless="${u.pending}" th:classappend="${u.enabled} ? 'text-bg-success' : 'text-bg-secondary'"
+                          th:text="${u.enabled} ? 'Active' : 'Disabled'"></span>
+                </td>
+                <td style="min-width: 220px">
+                    <form th:action="@{/admin/users/{id}/password(id=${u.id})}" method="post" class="input-group input-group-sm">
+                        <input class="form-control" name="newPassword" minlength="8" placeholder="Naya password" required autocomplete="off">
+                        <button class="btn btn-outline-secondary" type="submit">Set</button>
+                    </form></td>
+                <td class="text-end text-nowrap">
+                    <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post" class="d-inline"
+                          th:data-confirm="${u.enabled} ? 'Account disable karein?' : 'Account enable karein?'">
+                        <button class="btn btn-sm" th:classappend="${u.enabled} ? 'btn-outline-danger' : 'btn-outline-success'" type="submit"
+                                th:text="${u.enabled} ? 'Disable' : 'Enable'">Toggle</button></form>
+                    <form th:if="${u.teacher or u.organizer}" th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"
+                          class="d-inline ms-1" data-confirm="Account delete karein?">
+                        <button class="btn btn-sm btn-outline-dark" type="submit"><i class="bi bi-trash"></i></button></form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div></div>
+
+    <script>
+        (function () {
+            var r = document.getElementById('roleSel'), b = document.getElementById('stuFields'), d = document.getElementById('deptField');
+            function t() {
+                var stu = r.value === 'STUDENT';
+                b.classList.toggle('d-none', !stu);
+                d.classList.toggle('d-none', r.value !== 'TEACHER');
+                b.querySelectorAll('input,select').forEach(function (i) { i.required = stu ? i.getAttribute('data-req') === '1' : false; });
+            }
+            r.addEventListener('change', t); t();
+        })();
+    </script>
+</main>
+</body>
+</html>

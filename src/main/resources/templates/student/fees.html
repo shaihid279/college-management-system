@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('My Fees', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">My Fees</h1>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4"><div class="card"><div class="card-body">
+            <div class="small text-muted">Total Fees</div>
+            <div class="h4 mb-0" th:text="'₹' + ${#numbers.formatDecimal(s.totalFees, 1, 'COMMA', 0, 'POINT')}"></div></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-body">
+            <div class="small text-muted">Paid</div>
+            <div class="h4 mb-0 text-success" th:text="'₹' + ${#numbers.formatDecimal(s.paidFees, 1, 'COMMA', 0, 'POINT')}"></div></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-body">
+            <div class="small text-muted">Pending</div>
+            <div class="h4 mb-0" th:classappend="${s.pendingFees.signum() > 0} ? 'text-danger' : 'text-success'"
+                 th:text="'₹' + ${#numbers.formatDecimal(s.pendingFees, 1, 'COMMA', 0, 'POINT')}"></div></div></div></div>
+    </div>
+    <div class="card"><div class="card-body pb-0"><h5 class="mb-0">Payment history</h5></div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead><tr><th>Date</th><th>Receipt No</th><th>Mode</th><th class="text-end">Amount</th><th class="text-end">Receipt</th></tr></thead>
+                <tbody>
+                <tr th:each="p : ${payments}">
+                    <td th:text="${#temporals.format(p.paidOn, 'dd MMM yyyy')}">date</td>
+                    <td th:text="${p.receiptNo}">RC</td>
+                    <td th:text="${p.payMode}">UPI</td>
+                    <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(p.amount, 1, 'COMMA', 2, 'POINT')}">0</td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-primary" th:href="@{/student/receipt/{id}(id=${p.id})}">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>PDF</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(payments)}"><td colspan="5" class="text-center text-muted py-4">Abhi koi payment record nahi hai.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

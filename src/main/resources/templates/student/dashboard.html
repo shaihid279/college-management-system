@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Student Dashboard', ~{::main})}">
+<body>
+<main class="container">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <th:block th:replace="~{fragments/layout :: avatar(${me}, 64)}"></th:block>
+        <div>
+            <h1 class="h3 mb-1">Namaste, <span th:text="${me.fullName}">Name</span> 👋</h1>
+            <span class="badge text-bg-primary me-1" th:text="${s.idCardNo}">ID</span>
+            <span class="badge text-bg-secondary me-1" th:text="${s.branch}">Branch</span>
+            <span class="badge text-bg-info" th:text="'Year ' + ${s.year}">Year</span>
+        </div>
+    </div>
+
+    <div class="alert alert-danger d-flex align-items-start gap-2" th:if="${s.attendanceLow}">
+        <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+        <div><strong>Attendance warning!</strong> Aapki attendance
+            <strong th:text="${s.attendancePercent} + '%'">70%</strong> hai, jo 75% se kam hai. Classes regular attend karein.</div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-1"><i class="bi bi-calendar-check"></i></div>
+            <div><div class="small text-muted">Attendance</div>
+                <div class="h4 mb-0" th:classappend="${s.attendanceLow} ? 'text-danger'" th:text="${s.attendancePercent} + '%'">0%</div></div>
+        </div></div></div>
+        <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-3"><i class="bi bi-hourglass-split"></i></div>
+            <div><div class="small text-muted">Pending Fees</div>
+                <div class="h4 mb-0" th:text="'₹' + ${#numbers.formatDecimal(s.pendingFees, 1, 'COMMA', 0, 'POINT')}">₹0</div></div>
+        </div></div></div>
+        <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-4"><i class="bi bi-wallet2"></i></div>
+            <div><div class="small text-muted">Fees Paid</div>
+                <div class="h4 mb-0" th:text="'₹' + ${#numbers.formatDecimal(s.paidFees, 1, 'COMMA', 0, 'POINT')}">₹0</div></div>
+        </div></div></div>
+        <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body d-flex gap-3 align-items-center">
+            <div class="stat-icon bg-grad-2"><i class="bi bi-award"></i></div>
+            <div><div class="small text-muted">Average Marks</div>
+                <div class="h4 mb-0" th:text="${marksCount > 0} ? ${#numbers.formatDecimal(avgMarks, 1, 1)} + '%' : '-'">-</div></div>
+        </div></div></div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6"><div class="card h-100"><div class="card-body">
+            <h6 class="mb-3">Attendance</h6>
+            <div class="chart-box" th:if="${s.totalClasses > 0}">
+                <canvas data-chart="doughnut" data-labels="Present|Absent"
+                        th:data-values="|${s.attendedClasses},${s.absentClasses}|" data-colors="#10b981,#ef4444"></canvas>
+            </div>
+            <div class="text-muted" th:if="${s.totalClasses == 0}">Attendance abhi update nahi hui.</div>
+            <div class="small text-muted mt-2" th:if="${s.totalClasses > 0}"
+                 th:text="${s.attendedClasses} + ' / ' + ${s.totalClasses} + ' classes attend ki'"></div>
+        </div></div></div>
+        <div class="col-md-6"><div class="card h-100"><div class="card-body">
+            <h6 class="mb-3">Fees</h6>
+            <div class="chart-box" th:if="${s.totalFees.signum() > 0}">
+                <canvas data-chart="doughnut" data-labels="Paid|Pending"
+                        th:data-values="|${s.paidFees},${s.pendingFees}|" data-colors="#4f46e5,#f59e0b"></canvas>
+            </div>
+            <div class="text-muted" th:if="${s.totalFees.signum() == 0}">Fees details abhi add nahi hui.</div>
+            <a class="btn btn-sm btn-outline-primary mt-2" th:href="@{/student/fees}">Receipts dekhein</a>
+        </div></div></div>
+    </div>
+
+    <div class="card"><div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0"><i class="bi bi-megaphone-fill text-danger me-2"></i>Notices</h5>
+            <a th:href="@{/notices}" class="small">Sab dekhein</a>
+        </div>
+        <div th:if="${#lists.isEmpty(notices)}" class="text-muted">Abhi koi notice nahi hai.</div>
+        <div th:each="n : ${notices}" class="notice-item p-3 mb-2 rounded" th:classappend="${n.important} ? 'important'">
+            <strong th:text="${n.title}">Title</strong>
+            <span class="badge text-bg-danger ms-1" th:if="${n.important}">Important</span>
+            <div class="small text-muted" th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy')}"></div>
+        </div>
+    </div></div>
+</main>
+</body>
+</html>

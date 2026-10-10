@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Toppers', ~{::main})}">
+<body>
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="h3 mb-0"><i class="bi bi-trophy-fill text-warning me-2"></i>Toppers Hall of Fame</h1>
+        <button th:if="${me != null and me.admin}" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addTopper">
+            <i class="bi bi-plus-lg me-1"></i>Topper add karein</button>
+    </div>
+
+    <div class="collapse mb-3" id="addTopper" th:if="${me != null and me.admin}">
+        <div class="card"><div class="card-body">
+            <form th:action="@{/admin/toppers}" method="post" enctype="multipart/form-data" class="row g-3">
+                <div class="col-md-3 text-center">
+                    <img id="topperPreview" class="photo-preview mb-2" th:src="@{/images/avatar.svg}" alt="Photo">
+                    <input class="form-control form-control-sm" type="file" name="photo" accept="image/png,image/jpeg,image/webp" data-preview="#topperPreview">
+                    <div class="form-text">Topper ki photo (max 2 MB)</div>
+                </div>
+                <div class="col-md-9"><div class="row g-2">
+                    <div class="col-md-6"><input class="form-control" name="studentName" placeholder="Student ka naam" required></div>
+                    <div class="col-md-6"><select class="form-select" name="branch" required>
+                        <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"></option></select></div>
+                    <div class="col-6 col-md-4"><input class="form-control" name="academicYear" placeholder="2025-26"></div>
+                    <div class="col-3 col-md-2"><input class="form-control" type="number" min="1" name="rankNo" value="1" title="Rank"></div>
+                    <div class="col-3 col-md-3"><input class="form-control" type="number" step="0.01" min="0" max="100" name="percentage" placeholder="%"></div>
+                    <div class="col-12"><input class="form-control" name="achievement" maxlength="190" placeholder="Achievement (optional)"></div>
+                    <div class="col-12"><button class="btn btn-primary" type="submit">Save</button></div>
+                </div></div>
+            </form>
+        </div></div>
+    </div>
+
+    <form th:action="@{/toppers}" method="get" class="row g-2 mb-3">
+        <div class="col-7 col-md-5"><select class="form-select" name="branch">
+            <option value="">Sab branches</option>
+            <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${b == fBranch}"></option></select></div>
+        <div class="col-5 col-md-3"><select class="form-select" name="academicYear">
+            <option value="">Sab saal</option>
+            <option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == fYear}"></option></select></div>
+        <div class="col-12 col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Filter</button></div>
+    </form>
+
+    <div class="card" th:if="${#lists.isEmpty(toppers)}"><div class="card-body coming-soon">
+        <i class="bi bi-trophy"></i><h5 class="mt-2">Toppers list coming soon</h5></div></div>
+
+    <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3" th:each="t : ${toppers}">
+            <div class="card h-100 text-center card-hover position-relative"><div class="card-body">
+                <span class="badge text-bg-warning rank-badge" th:text="'#' + ${t.rankNo}">#1</span>
+                <form th:if="${me != null and me.admin}" th:action="@{/admin/toppers/{id}/delete(id=${t.id})}" method="post"
+                      class="position-absolute top-0 end-0 m-2" data-confirm="Topper delete karein?">
+                    <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                <img class="photo-preview mb-2 mt-2" alt="Topper"
+                     th:src="${t.photo != null} ? @{'/uploads/' + ${t.photo}} : @{/images/avatar.svg}">
+                <h6 class="mb-0" th:text="${t.studentName}">Name</h6>
+                <div class="small text-muted" th:text="${t.branch}">Branch</div>
+                <div class="small text-muted" th:text="${t.academicYear}">2025-26</div>
+                <div class="h5 text-primary mb-1" th:if="${t.percentage > 0}" th:text="${t.percentage} + '%'">90%</div>
+                <div class="small" th:text="${t.achievement}"></div>
+            </div></div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

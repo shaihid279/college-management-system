@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Forgot Password', ~{::main})}">
+<body>
+<main class="container">
+    <div class="auth-wrap">
+        <div class="card w-100" style="max-width: 440px;">
+            <div class="card-body p-4 p-md-5">
+                <h1 class="h4 mb-2">Password bhool gaye?</h1>
+                <p class="text-muted small">Apna username ya email likhein. Reset link bhej diya jayega (30 minute valid).</p>
+                <form th:action="@{/forgot-password}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="identifier">Username ya Email</label>
+                        <input class="form-control form-control-lg" id="identifier" name="identifier" required autofocus>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">Reset link bhejein</button>
+                </form>
+                <div class="text-center mt-3"><a th:href="@{/login}" class="small">&larr; Login par wapas</a></div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

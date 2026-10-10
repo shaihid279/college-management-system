@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Reset Password', ~{::main})}">
+<body>
+<main class="container">
+    <div class="auth-wrap">
+        <div class="card w-100" style="max-width: 440px;">
+            <div class="card-body p-4 p-md-5">
+                <div th:if="${!valid}" class="text-center">
+                    <i class="bi bi-x-octagon text-danger display-4"></i>
+                    <h1 class="h5 mt-2">Link galat ya expire ho gaya</h1>
+                    <a class="btn btn-primary mt-2" th:href="@{/forgot-password}">Naya link mangein</a>
+                </div>
+                <div th:if="${valid}">
+                    <h1 class="h4 mb-3">Naya password set karein</h1>
+                    <form th:action="@{/reset-password}" method="post">
+                        <input type="hidden" name="token" th:value="${token}">
+                        <div class="mb-3">
+                            <label class="form-label" for="pw1">Naya password (min 8 character)</label>
+                            <input class="form-control" type="password" id="pw1" name="password" minlength="8" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="pw2">Password dobara likhein</label>
+                            <input class="form-control" type="password" id="pw2" name="confirm" minlength="8" required>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Password badlein</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

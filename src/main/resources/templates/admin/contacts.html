@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Contact Messages', ~{::main})}">
+<body>
+<main class="container">
+    <h1 class="h3 mb-3">Contact Messages</h1>
+    <div class="card" th:if="${#lists.isEmpty(items)}"><div class="card-body coming-soon">
+        <i class="bi bi-envelope"></i><h5 class="mt-2">Abhi koi message nahi aaya</h5></div></div>
+    <div class="card mb-3" th:each="c : ${items}"><div class="card-body" th:classappend="${!c.seen} ? 'border-start border-4 border-primary'">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <div>
+                <strong th:text="${c.name}">Name</strong>
+                <a class="small ms-2" th:href="'mailto:' + ${c.email}" th:text="${c.email}">email</a>
+                <span class="badge text-bg-primary ms-1" th:if="${!c.seen}">New</span>
+            </div>
+            <span class="small text-muted" th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, hh:mm a')}"></span>
+        </div>
+        <div class="fw-semibold mt-1" th:if="${c.subject != null and !c.subject.isBlank()}" th:text="${c.subject}"></div>
+        <div class="mt-1" style="white-space: pre-line" th:text="${c.message}"></div>
+        <div class="d-flex gap-2 mt-3">
+            <form th:if="${!c.seen}" th:action="@{/admin/contacts/{id}/seen(id=${c.id})}" method="post">
+                <button class="btn btn-sm btn-outline-primary" type="submit">Read mark karein</button></form>
+            <a class="btn btn-sm btn-outline-secondary" th:href="'mailto:' + ${c.email}">Reply</a>
+            <form th:action="@{/admin/contacts/{id}/delete(id=${c.id})}" method="post" data-confirm="Message delete karein?">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form>
+        </div>
+    </div></div>
+</main>
+</body>
+</html>

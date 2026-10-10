@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Registrations', ~{::main})}">
+<body>
+<main class="container">
+    <a th:href="@{/organizer/dashboard}" class="small">&larr; My events</a>
+    <h1 class="h4 my-3">Registrations: <span th:text="${event.title}">Event</span>
+        <span class="badge text-bg-primary ms-2" th:text="${#lists.size(regs)}">0</span></h1>
+    <div class="card"><div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>Student</th><th>ID Card</th><th>Branch / Year</th><th>Registered on</th></tr></thead>
+            <tbody>
+            <tr th:each="r, i : ${regs}">
+                <td th:text="${i.count}">1</td>
+                <td><div class="d-flex align-items-center gap-2">
+                    <th:block th:replace="~{fragments/layout :: avatar(${r.student.user}, 32)}"></th:block>
+                    <span th:text="${r.student.user.fullName}">Name</span></div></td>
+                <td th:text="${r.student.idCardNo}"></td>
+                <td><span th:text="${r.student.branch}"></span> <span class="badge text-bg-secondary" th:text="'Y' + ${r.student.year}"></span></td>
+                <td class="small" th:text="${#temporals.format(r.registeredAt, 'dd MMM yyyy, hh:mm a')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(regs)}"><td colspan="5" class="text-center text-muted py-4">Abhi tak kisi ne register nahi kiya.</td></tr>
+            </tbody>
+        </table>
+    </div></div>
+</main>
+</body>
+</html>

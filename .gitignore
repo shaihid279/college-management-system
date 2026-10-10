@@ -1,10 +1,20 @@
-HELP.md
+######## Maven / build ########
 target/
-.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+######## Uploaded photos (GitHub par nahi jayengi) ########
+uploads/
+
+######## IntelliJ IDEA ########
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+######## Eclipse / STS ########
 .apt_generated
 .classpath
 .factorypath
@@ -12,22 +22,26 @@ target/
 .settings
 .springBeans
 .sts4-cache
+bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+######## VS Code ########
+.vscode/
 
-### NetBeans ###
+######## NetBeans ########
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+######## Secrets / local config ########
+.env
+*.env
+application-local.properties
+application-local.yml
+
+######## Logs / OS ########
+*.log
+logs/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Register', ~{::main})}">
+<body>
+<main class="container" style="max-width: 760px">
+    <div class="text-center mb-3">
+        <h1 class="h3">Naya account banayein</h1>
+        <ul class="nav nav-pills justify-content-center gap-1 mt-3 flex-wrap">
+            <li class="nav-item"><a class="nav-link" th:classappend="${role == 'student'} ? 'active'" th:href="@{/register/student}">Student</a></li>
+            <li class="nav-item"><a class="nav-link" th:classappend="${role == 'teacher'} ? 'active'" th:href="@{/register/teacher}">Teacher</a></li>
+            <li class="nav-item"><a class="nav-link" th:classappend="${role == 'organizer'} ? 'active'" th:href="@{/register/organizer}">Event Organizer</a></li>
+        </ul>
+    </div>
+
+    <div class="alert alert-warning" th:if="${needsApproval}">
+        <i class="bi bi-hourglass-split me-1"></i>
+        Registration ke baad <strong>Admin approval</strong> zaruri hai. Approve hone ke baad hi login hoga.
+        Ek baar approve hone ke baad wahi email dobara register kare to approval nahi lagega.
+    </div>
+
+    <div class="card"><div class="card-body p-4">
+        <form th:action="@{/register/{r}(r=${role})}" method="post" enctype="multipart/form-data">
+            <div class="row g-3">
+                <div class="col-12 text-center">
+                    <img id="regPreview" class="photo-preview mb-2" th:src="@{/images/avatar.svg}" alt="Photo">
+                    <div><input class="form-control form-control-sm mx-auto" style="max-width: 280px" type="file" name="photo"
+                                accept="image/png,image/jpeg,image/webp" data-preview="#regPreview"></div>
+                    <div class="form-text">Profile photo (optional, JPG/PNG/WEBP, max 2 MB)</div>
+                </div>
+                <div class="col-md-6"><label class="form-label">Poora naam</label>
+                    <input class="form-control" name="fullName" maxlength="100" required th:value="${regForm?.get('fullName')}"></div>
+                <div class="col-md-6"><label class="form-label">Username</label>
+                    <input class="form-control" name="username" minlength="3" maxlength="40" required autocomplete="username" th:value="${regForm?.get('username')}"></div>
+                <div class="col-md-6"><label class="form-label">Email</label>
+                    <input class="form-control" type="email" name="email" maxlength="120" required th:value="${regForm?.get('email')}"></div>
+                <div class="col-md-6"><label class="form-label">Phone</label>
+                    <input class="form-control" name="phone" maxlength="15" inputmode="tel" th:value="${regForm?.get('phone')}"></div>
+                <th:block th:if="${role == 'teacher'}">
+                    <div class="col-12"><label class="form-label">Department</label>
+                        <select class="form-select" name="department" required>
+                            <option value="" disabled selected>Department chunein</option>
+                            <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"
+                                    th:selected="${regForm != null and b == regForm.get('department')}"></option>
+                        </select></div>
+                </th:block>
+
+
+
+                <th:block th:if="${role == 'student'}">
+                    <div class="col-md-4"><label class="form-label">ID Card Number</label>
+                        <input class="form-control" name="idCardNo" maxlength="40" required th:value="${regForm?.get('idCardNo')}"></div>
+                    <div class="col-md-5"><label class="form-label">Branch</label>
+                        <select class="form-select" name="branch" required>
+                            <option value="" disabled th:selected="${regForm == null}">Branch chunein</option>
+                            <option th:each="b : ${branches}" th:value="${b}" th:text="${b}" th:selected="${regForm != null and b == regForm.get('branch')}"></option>
+                        </select></div>
+                    <div class="col-md-3"><label class="form-label">Year</label>
+                        <select class="form-select" name="year" required>
+                            <option th:each="y : ${#numbers.sequence(1, 4)}" th:value="${y}" th:text="'Year ' + ${y}"
+                                    th:selected="${regForm != null and regForm.get('year') == y.toString()}"></option>
+                        </select></div>
+                </th:block>
+
+                <div class="col-md-6"><label class="form-label">Password (min 8)</label>
+                    <div class="input-group">
+                        <input class="form-control" type="password" id="rpw" name="password" minlength="8" required autocomplete="new-password">
+                        <button class="btn btn-outline-secondary" type="button" data-toggle-password="#rpw"><i class="bi bi-eye"></i></button>
+                    </div></div>
+                <div class="col-md-6"><label class="form-label">Password dobara</label>
+                    <input class="form-control" type="password" name="confirm" minlength="8" required autocomplete="new-password"></div>
+
+                <div class="d-none" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+
+                <div class="col-12"><button class="btn btn-primary btn-lg w-100" type="submit">
+                    <i class="bi bi-person-plus me-1"></i>Register</button></div>
+            </div>
+        </form>
+        <div class="text-center mt-3 small">Pehle se account hai? <a th:href="@{/login/{r}(r=${role})}">Login karein</a></div>
+    </div></div>
+</main>
+</body>
+</html>

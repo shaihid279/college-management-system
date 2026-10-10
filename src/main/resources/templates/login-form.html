@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(${label} + ' Login', ~{::main})}">
+<body>
+<main class="container">
+    <div class="auth-wrap">
+        <div class="card w-100" style="max-width: 440px;">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="feature-icon bg-grad-1 mx-auto mb-3"><i class="bi" th:classappend="${icon}"></i></div>
+                    <h1 class="h4 mb-1"><span th:text="${label}">Student</span> Login</h1>
+                    <p class="text-muted small mb-0" th:if="${portal == 'admin'}">Admin ki ID/password fix hai. Registration nahi hota.</p>
+                </div>
+
+                <div class="alert alert-danger py-2" th:if="${param.error != null}">
+                    <span th:if="${param.error[0] == 'pending'}">Aapka account abhi admin approval ke intezaar me hai. Approve hone ke baad login kar payenge.</span>
+                    <span th:if="${param.error[0] == 'disabled'}">Aapka account disable hai. Admin se sampark karein.</span>
+                    <span th:if="${param.error[0] == 'role'}">Ye account <strong th:text="${label}"></strong> ka nahi hai. Apne role ka sahi login chunein.</span>
+                    <span th:if="${param.error[0] != 'pending' and param.error[0] != 'disabled' and param.error[0] != 'role'}">Username ya password galat hai.</span>
+                </div>
+
+                <form th:action="@{/login}" method="post">
+                    <input type="hidden" name="portal" th:value="${portal}">
+                    <div class="mb-3">
+
+                        <label class="form-label" for="username">Username ya Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input class="form-control form-control-lg" id="username" name="username" autocomplete="username" required autofocus>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label" for="pw">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input class="form-control form-control-lg" type="password" id="pw" name="password" autocomplete="current-password" required>
+                            <button class="btn btn-outline-secondary" type="button" data-toggle-password="#pw"><i class="bi bi-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="text-end mb-3"><a class="small" th:href="@{/forgot-password}">Password bhool gaye?</a></div>
+                    <button class="btn btn-primary btn-lg w-100" type="submit">Login</button>
+                </form>
+
+                <div class="text-center mt-3 small" th:if="${portal != 'admin'}">
+                    Naye ho? <a th:href="@{/register/{p}(p=${portal})}">Register karein</a>
+                </div>
+                <div class="text-center mt-2 small"><a th:href="@{/login}">&larr; Dusra role chunein</a></div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

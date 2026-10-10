@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Notices', ~{::main})}">
+<body>
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="h3 mb-0"><i class="bi bi-megaphone-fill text-danger me-2"></i>Notice Board</h1>
+        <button th:if="${me != null and me.admin}" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addNotice">
+            <i class="bi bi-plus-lg me-1"></i>Naya notice</button>
+    </div>
+
+    <div class="collapse mb-3" id="addNotice" th:if="${me != null and me.admin}">
+        <div class="card"><div class="card-body">
+            <form th:action="@{/admin/notices}" method="post">
+                <div class="mb-2"><label class="form-label">Title</label>
+                    <input class="form-control" name="title" maxlength="190" required></div>
+                <div class="mb-2"><label class="form-label">Details</label>
+                    <textarea class="form-control" name="content" rows="3" maxlength="2900"></textarea></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Kis department ke liye?</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="allDepartments" value="true" id="nAll" checked data-dept-all="#nBranches">
+                        <label class="form-check-label fw-semibold" for="nAll">Sabhi departments (All)</label>
+                    </div>
+                    <div id="nBranches" class="row g-1 d-none">
+                        <div class="col-md-6" th:each="b, i : ${branches}">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="branches" th:value="${b}" th:id="'nb' + ${i.index}">
+                                <label class="form-check-label" th:for="'nb' + ${i.index}" th:text="${b}">Branch</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text">Sirf chune hue departments ke student aur teacher ko ye notice dikhega.</div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="important" value="true" id="imp">
+                    <label class="form-check-label" for="imp">Important (laal highlight hoga, jaise chhutti ka notice)</label>
+                </div>
+                <button class="btn btn-primary" type="submit">Post karein</button>
+            </form>
+        </div></div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(notices)}" class="card"><div class="card-body coming-soon">
+        <i class="bi bi-megaphone"></i><h5 class="mt-2">Abhi koi notice nahi hai</h5></div></div>
+
+    <div class="card mb-3" th:each="n : ${notices}"><div class="card-body notice-item rounded" th:classappend="${n.important} ? 'important'">
+        <div class="d-flex justify-content-between align-items-start gap-2">
+            <h5 class="mb-1">
+                <span th:text="${n.title}">Title</span>
+                <span class="badge text-bg-danger ms-1" th:if="${n.important}">Important</span>
+            </h5>
+            <form th:if="${me != null and me.admin}" th:action="@{/admin/notices/{id}/delete(id=${n.id})}" method="post" data-confirm="Ye notice delete karein?">
+                <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+            </form>
+        </div>
+        <div class="mb-2">
+            <span class="badge text-bg-success" th:if="${n.forAll}"><i class="bi bi-people me-1"></i>All Departments</span>
+            <span class="badge text-bg-info me-1" th:each="t : ${n.targetList}" th:text="${t}">Dept</span>
+        </div>
+        <div class="small text-muted mb-2" th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, hh:mm a')}">date</div>
+        <div style="white-space: pre-line" th:text="${n.content}"></div>
+    </div></div>
+</main>
+</body>
+</html>
